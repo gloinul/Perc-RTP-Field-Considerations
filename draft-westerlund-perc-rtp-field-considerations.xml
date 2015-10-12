@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="3"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="info" docName="draft-westerlund-perc-rtp-considerations-00"
+     ipr="trust200902">
+  <front>
+    <title abbrev="Abbreviated-Title">Considerations of handling of RTP
+    fields</title>
+
+    <author fullname="Magnus Westerlund" initials="M." surname="Westerlund">
+      <organization>Ericsson</organization>
+
+      <address>
+        <postal>
+          <street>Farogatan 2</street>
+
+          <city>SE-164 80 Stockholm</city>
+
+          <country>Sweden</country>
+        </postal>
+
+        <phone>+46 10 714 82 87</phone>
+
+        <email>magnus.westerlund@ericsson.com</email>
+      </address>
+    </author>
+
+    <date day="12" month="October" year="2015" />
+
+    <abstract>
+      <t>This draft discusses how the Privacy Enhanced RTP Conferencing
+      solution will need consider the different RTP header fields in regards
+      to both hop-by-hop and end-to-end security. </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t>In the design of the PERC end-to-end security solution for RTP media
+      streams there is need to carefully consider what properties the
+      different fields have, their security implications and provide
+      recommendations for how they are handled. This review needs to consider
+      both hop-by-hop properties as well as the end-to-end security. </t>
+
+      <t>The fields analysed are that of a regular RTP packet. This is to
+      consider the impact of the information that exists normally in an
+      centralized multi-party conference. </t>
+    </section>
+
+    <section title="Definitions">
+      <t>This document uses the following definitions:<list style="hanging">
+          <t hangText="Endpoint:">An RTP stream sending and/or receiving
+          entity that is part of the end-to-end security context. </t>
+
+          <t hangText="MDD:">Media Delivery Device - An RTP middlebox that
+          operates according to any of the three possible <xref
+          target="I-D.ietf-avtcore-rtp-topologies-update">RTP
+          topologies</xref> that is possible in the PERC system:<list
+              style="empty">
+              <t>Transport Translator - Relay</t>
+
+              <t>Switching RTP Mixer</t>
+
+              <t>Selective Forwarding Middlebox (SFM)</t>
+            </list></t>
+
+          <t hangText="Third Party:">An entity that is neither an endpoint nor
+          an MDD.</t>
+        </list></t>
+
+      <t></t>
+
+      <section title="Connection Case">
+        <t>This analys is based on a basic connectivity use cases, where a
+        media stream sending endpoint (originating) sends one or more RTP
+        streams to a MDD. That MDD is in its turn connected to another MDD
+        (Cascaded) which further sends the media (when selecting to) from the
+        originating endpoint to the receiving endpoint. This connection case
+        is depicted in <xref target="fig-connection-case"></xref>.</t>
+
+        <figure anchor="fig-connection-case">
+          <artwork><![CDATA[+-------------+     +------+     +------+     +-----------+
+|             |     |      |     |      |     |           |
+| Originating +---->+ MDD  +---->+ MDD  +---->+ Receiving |
+| Endpoint    |     |      |     |      |     | Endpoint  |
+|             |     |      |     |      |     |           |
++-------------+     +------+     +------+     +-----------+
+]]></artwork>
+        </figure>
+
+        <t></t>
+      </section>
+    </section>
+
+    <section title="RTP Packets Fields">
+      <t>This section analyses each RTP packet field or part. </t>
+
+      <section title="Version Field (V)">
+        <t>As the solution is focused on RTP as defined by <xref
+        target="RFC3550"></xref> this field must be 2. This field needs to be
+        hop-by-hop protected to prevent denial of service attacks by third
+        parties. The version field does not require end-to-end protection as
+        the MDD has more efficient denial of service attacks that it can
+        perform on the endpoints, including not forwarding a single media
+        packet/stream. </t>
+      </section>
+
+      <section title="Padding Indicator bit (P)">
+        <t></t>
+      </section>
+
+      <section title="Extension Indicator bit (X)">
+        <t></t>
+      </section>
+
+      <section title="CSRC Count (CC)">
+        <t></t>
+      </section>
+
+      <section title="Marker Bit (M)">
+        <t></t>
+      </section>
+
+      <section title="Payload Type (PT)">
+        <t></t>
+      </section>
+
+      <section title="Sequence Number">
+        <t></t>
+      </section>
+
+      <section title="Timestamp">
+        <t></t>
+      </section>
+
+      <section title="SSRC">
+        <t></t>
+      </section>
+
+      <section title="CSRC List">
+        <t></t>
+      </section>
+
+      <section title="Header Extension">
+        <t></t>
+      </section>
+
+      <section title="Payload">
+        <t></t>
+      </section>
+
+      <section title="Padding Octets">
+        <t></t>
+      </section>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document makes no request of IANA.</t>
+
+      <t>Note to RFC Editor: this section may be removed on publication as an
+      RFC.</t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t></t>
+    </section>
+
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t></t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="reference.RFC.2119"?>
+
+      <?rfc include='reference.RFC.3550'?>
+
+      <?rfc include='reference.I-D.ietf-avtcore-rtp-topologies-update'?>
+    </references>
+  </back>
+</rfc>
