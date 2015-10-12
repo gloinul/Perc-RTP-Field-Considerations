@@ -102,20 +102,71 @@
     </section>
 
     <section title="RTP Packets Fields">
-      <t>This section analyses each RTP packet field or part. </t>
+      <t>This section analyses each RTP packet field or part. The anlysis for
+      each field should answer the following questions:<list style="empty">
+          <t>Can it be modified on path by an MDD?</t>
+
+          <t>Does the receiving endpoint need the originating endpoints set
+          value?</t>
+
+          <t>Does it need end-to-end authentication?</t>
+
+          <t>Does it need end-to-end confidentiality?</t>
+
+          <t>Does it need hop-by-hop authentication?</t>
+
+          <t>Does it need hob-by-hop confidentiality?</t>
+
+          <t></t>
+
+          <t></t>
+        </list></t>
+
+      <t>Some general considerations apply. Fields that are end-to-end
+      authenticated is actually recommended to be hop-by-hop authenticated,
+      even when there only are a end-to-end version of the field. The reason
+      for this is to detect modifications at the earliest instance and avoid
+      wasting resource further down the path.</t>
 
       <section title="Version Field (V)">
         <t>As the solution is focused on RTP as defined by <xref
-        target="RFC3550"></xref> this field must be 2. This field needs to be
-        hop-by-hop protected to prevent denial of service attacks by third
-        parties. The version field does not require end-to-end protection as
-        the MDD has more efficient denial of service attacks that it can
-        perform on the endpoints, including not forwarding a single media
-        packet/stream. </t>
+        target="RFC3550"></xref> this field must be 2. The field is not
+        expected to be modified by an MDD. The receiving endpoint will also
+        assume that the originating endpoint used RTP (V=2). Modification of
+        this field should result in the packet being dropped by the receiving
+        endpoint or MDD, independent if it is hop-by-hop authenticated. The
+        version field does not require end-to-end authentication as the MDD
+        has more efficient denial of service attacks that it can perform on
+        the endpoints, including not forwarding a single media packet/stream.
+        The field does not need to be confidentiality protected end-to-end as
+        the MDD must know that it is RTP it receives. The field may be
+        hop-by-hop confidentiality protected as part of an attempt to hide
+        that the packet stream is RTP, although packet analysis is likely to
+        reveal that the streams are real-time media anyway. </t>
       </section>
 
       <section title="Padding Indicator bit (P)">
-        <t></t>
+        <t>The padding bit is an indicator for the presence of the padding
+        octets at the end of the RTP payload. As further discussed in <xref
+        target="sec-padding-octets">Padding Octets</xref> the padding is
+        considered part of the payload and jointly protected with the payload.
+        The reason for this is that padding can help hide length variations in
+        the payload that can leak information about the media content being
+        carried <xref target="RFC6562"></xref>.</t>
+
+        <t>As the Payload and padding octets are end-to-end protected, the
+        padding indicator can't be modified by the MDD, due to its inability
+        to remove the padding octets. For correct processing in the receiving
+        endpoint the padding indicator needs to be correct. Therefore it
+        should be end-to-end authenticated. It could be end-to-end
+        confidentiality protected. The benefit of protecting it end-to-end
+        would be that the MDD would not know if the end-to-end payload is
+        padded or not. Knowing if the payload is padded or not reduces the
+        uncertainty for an attacker that attempts to perform content analysis
+        based on payload length. Because of that it would beneficial to
+        protect the padding bit also hop-by-hop, if not already protected
+        end-to-end. The padding bit should be hop-by-hop authenticated to
+        protect if end-to-end authentication is not used.</t>
       </section>
 
       <section title="Extension Indicator bit (X)">
@@ -158,7 +209,7 @@
         <t></t>
       </section>
 
-      <section title="Padding Octets">
+      <section anchor="sec-padding-octets" title="Padding Octets">
         <t></t>
       </section>
     </section>
@@ -184,6 +235,8 @@
       <?rfc include="reference.RFC.2119"?>
 
       <?rfc include='reference.RFC.3550'?>
+
+      <?rfc include='reference.RFC.6562'?>
 
       <?rfc include='reference.I-D.ietf-avtcore-rtp-topologies-update'?>
     </references>
