@@ -1,0 +1,336 @@
+
+
+
+
+Network Working Group                                      M. Westerlund
+Internet-Draft                                                  Ericsson
+Intended status: Informational                          October 12, 2015
+Expires: April 14, 2016
+
+
+                Considerations of handling of RTP fields
+              draft-westerlund-perc-rtp-considerations-00
+
+Abstract
+
+   This draft discusses how the Privacy Enhanced RTP Conferencing
+   solution will need consider the different RTP header fields in
+   regards to both hop-by-hop and end-to-end security.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on April 14, 2016.
+
+Copyright Notice
+
+   Copyright (c) 2015 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 1]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Definitions . . . . . . . . . . . . . . . . . . . . . . . . .   2
+     2.1.  Connection Case . . . . . . . . . . . . . . . . . . . . .   3
+   3.  RTP Packets Fields  . . . . . . . . . . . . . . . . . . . . .   3
+     3.1.  Version Field (V) . . . . . . . . . . . . . . . . . . . .   4
+     3.2.  Padding Indicator bit (P) . . . . . . . . . . . . . . . .   4
+     3.3.  Extension Indicator bit (X) . . . . . . . . . . . . . . .   5
+     3.4.  CSRC Count (CC) . . . . . . . . . . . . . . . . . . . . .   5
+     3.5.  Marker Bit (M)  . . . . . . . . . . . . . . . . . . . . .   5
+     3.6.  Payload Type (PT) . . . . . . . . . . . . . . . . . . . .   5
+     3.7.  Sequence Number . . . . . . . . . . . . . . . . . . . . .   5
+     3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .   5
+     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .   5
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
+   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   In the design of the PERC end-to-end security solution for RTP media
+   streams there is need to carefully consider what properties the
+   different fields have, their security implications and provide
+   recommendations for how they are handled.  This review needs to
+   consider both hop-by-hop properties as well as the end-to-end
+   security.
+
+   The fields analysed are that of a regular RTP packet.  This is to
+   consider the impact of the information that exists normally in an
+   centralized multi-party conference.
+
+2.  Definitions
+
+   This document uses the following definitions:
+
+   Endpoint:  An RTP stream sending and/or receiving entity that is part
+      of the end-to-end security context.
+
+   MDD:  Media Delivery Device - An RTP middlebox that operates
+      according to any of the three possible RTP topologies
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 2]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+      [I-D.ietf-avtcore-rtp-topologies-update] that is possible in the
+      PERC system:
+
+         Transport Translator - Relay
+
+         Switching RTP Mixer
+
+         Selective Forwarding Middlebox (SFM)
+
+   Third Party:  An entity that is neither an endpoint nor an MDD.
+
+2.1.  Connection Case
+
+   This analys is based on a basic connectivity use cases, where a media
+   stream sending endpoint (originating) sends one or more RTP streams
+   to a MDD.  That MDD is in its turn connected to another MDD
+   (Cascaded) which further sends the media (when selecting to) from the
+   originating endpoint to the receiving endpoint.  This connection case
+   is depicted in Figure 1.
+
+   +-------------+     +------+     +------+     +-----------+
+   |             |     |      |     |      |     |           |
+   | Originating +---->+ MDD  +---->+ MDD  +---->+ Receiving |
+   | Endpoint    |     |      |     |      |     | Endpoint  |
+   |             |     |      |     |      |     |           |
+   +-------------+     +------+     +------+     +-----------+
+
+                                 Figure 1
+
+3.  RTP Packets Fields
+
+   This section analyses each RTP packet field or part.  The anlysis for
+   each field should answer the following questions:
+
+      Can it be modified on path by an MDD?
+
+      Does the receiving endpoint need the originating endpoints set
+      value?
+
+      Does it need end-to-end authentication?
+
+      Does it need end-to-end confidentiality?
+
+      Does it need hop-by-hop authentication?
+
+      Does it need hob-by-hop confidentiality?
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 3]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+   Some general considerations apply.  Fields that are end-to-end
+   authenticated is actually recommended to be hop-by-hop authenticated,
+   even when there only are a end-to-end version of the field.  The
+   reason for this is to detect modifications at the earliest instance
+   and avoid wasting resource further down the path.
+
+3.1.  Version Field (V)
+
+   As the solution is focused on RTP as defined by [RFC3550] this field
+   must be 2.  The field is not expected to be modified by an MDD.  The
+   receiving endpoint will also assume that the originating endpoint
+   used RTP (V=2).  Modification of this field should result in the
+   packet being dropped by the receiving endpoint or MDD, independent if
+   it is hop-by-hop authenticated.  The version field does not require
+   end-to-end authentication as the MDD has more efficient denial of
+   service attacks that it can perform on the endpoints, including not
+   forwarding a single media packet/stream.  The field does not need to
+   be confidentiality protected end-to-end as the MDD must know that it
+   is RTP it receives.  The field may be hop-by-hop confidentiality
+   protected as part of an attempt to hide that the packet stream is
+   RTP, although packet analysis is likely to reveal that the streams
+   are real-time media anyway.
+
+3.2.  Padding Indicator bit (P)
+
+   The padding bit is an indicator for the presence of the padding
+   octets at the end of the RTP payload.  As further discussed in
+   Padding Octets (Section 3.13) the padding is considered part of the
+   payload and jointly protected with the payload.  The reason for this
+   is that padding can help hide length variations in the payload that
+   can leak information about the media content being carried [RFC6562].
+
+   As the Payload and padding octets are end-to-end protected, the
+   padding indicator can't be modified by the MDD, due to its inability
+   to remove the padding octets.  For correct processing in the
+   receiving endpoint the padding indicator needs to be correct.
+   Therefore it should be end-to-end authenticated.  It could be end-to-
+   end confidentiality protected.  The benefit of protecting it end-to-
+   end would be that the MDD would not know if the end-to-end payload is
+   padded or not.  Knowing if the payload is padded or not reduces the
+   uncertainty for an attacker that attempts to perform content analysis
+   based on payload length.  Because of that it would beneficial to
+   protect the padding bit also hop-by-hop, if not already protected
+   end-to-end.  The padding bit should be hop-by-hop authenticated to
+   protect if end-to-end authentication is not used.
+
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 4]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+3.3.  Extension Indicator bit (X)
+
+3.4.  CSRC Count (CC)
+
+3.5.  Marker Bit (M)
+
+3.6.  Payload Type (PT)
+
+3.7.  Sequence Number
+
+3.8.  Timestamp
+
+3.9.  SSRC
+
+3.10.  CSRC List
+
+3.11.  Header Extension
+
+3.12.  Payload
+
+3.13.  Padding Octets
+
+4.  IANA Considerations
+
+   This document makes no request of IANA.
+
+   Note to RFC Editor: this section may be removed on publication as an
+   RFC.
+
+5.  Security Considerations
+
+6.  Acknowledgements
+
+7.  Normative References
+
+   [I-D.ietf-avtcore-rtp-topologies-update]
+              Westerlund, M. and S. Wenger, "RTP Topologies", draft-
+              ietf-avtcore-rtp-topologies-update-10 (work in progress),
+              July 2015.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <http://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 5]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+   [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
+              Jacobson, "RTP: A Transport Protocol for Real-Time
+              Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
+              July 2003, <http://www.rfc-editor.org/info/rfc3550>.
+
+   [RFC6562]  Perkins, C. and JM. Valin, "Guidelines for the Use of
+              Variable Bit Rate Audio with Secure RTP", RFC 6562,
+              DOI 10.17487/RFC6562, March 2012,
+              <http://www.rfc-editor.org/info/rfc6562>.
+
+Author's Address
+
+   Magnus Westerlund
+   Ericsson
+   Farogatan 2
+   SE-164 80 Stockholm
+   Sweden
+
+   Phone: +46 10 714 82 87
+   Email: magnus.westerlund@ericsson.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 6]
