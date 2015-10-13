@@ -214,6 +214,126 @@
       </section>
     </section>
 
+    <section anchor="Summary" title="Summery">
+      <t>The following table summarizes the information from the previous
+      section. </t>
+      
+      <texttable anchor="summaryTable" title="Summary of Handling Required">
+        <ttcol align='center'>Data</ttcol>
+        <ttcol align='center'>MDD Mod</ttcol>
+        <ttcol align='center'>Orig Needed</ttcol>
+        <ttcol align='center'>E2E Auth</ttcol>
+        <ttcol align='center'>E2E Conf</ttcol>
+        <ttcol align='center'>HBH Auth</ttcol>
+        <ttcol align='center'>HBH Conf</ttcol>
+        
+        <c> V </c>
+        <c> No</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> No</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> P </c>
+        <c> Yes</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> X </c>
+        <c> Yes</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> CC </c>
+        <c> Yes</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+                
+        <c> M </c>
+        <c> ?</c> <!-- MDD Modify -->
+        <c> ?</c> <!-- Orig Needed-->
+        <c> ?</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> PT </c>
+        <c> May</c> <!-- MDD Modify -->
+        <c> ?</c> <!-- Orig Needed-->
+        <c> ?</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> Seq No </c>
+        <c> May</c> <!-- MDD Modify -->
+        <c> Yes</c> <!-- Orig Needed-->
+        <c> Yes</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> Timestamp </c>
+        <c> May</c> <!-- MDD Modify -->
+        <c> ?</c> <!-- Orig Needed-->
+        <c> ?</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> SSRC </c>
+        <c> May</c> <!-- MDD Modify -->
+        <c> Yes</c> <!-- Orig Needed-->
+        <c> Yes</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> CSRCs </c>
+        <c> Yes</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> No</c><!-- HBH Conf-->
+        
+        <c> Extensions </c>
+        <c> Yes</c> <!-- MDD Modify -->
+        <c> No</c> <!-- Orig Needed-->
+        <c> No</c><!-- E2E Auth-->
+        <c> No</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> Some</c><!-- HBH Conf-->
+        
+        <c>Payload</c>
+        <c>No</c> <!-- MDD Modify -->
+        <c>Yes</c> <!-- Orig Needed-->
+        <c>Yes</c><!-- E2E Auth-->
+        <c>Yes</c><!-- E2E Conf-->
+        <c>Yes</c><!--HBH Auth -->
+        <c>Yes</c><!-- HBH Conf-->
+        
+        <c> Padding </c>
+        <c> No</c> <!-- MDD Modify -->
+        <c> Yes</c> <!-- Orig Needed-->
+        <c> Yes</c><!-- E2E Auth-->
+        <c> Yes</c><!-- E2E Conf-->
+        <c> Yes</c><!--HBH Auth -->
+        <c> Yes</c><!-- HBH Conf-->
+           
+      </texttable>
+    </section>
+    
     <section anchor="IANA" title="IANA Considerations">
       <t>This document makes no request of IANA.</t>
 
