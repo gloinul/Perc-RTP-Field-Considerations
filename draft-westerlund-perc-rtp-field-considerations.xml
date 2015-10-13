@@ -39,7 +39,7 @@
     <abstract>
       <t>This draft discusses how the Privacy Enhanced RTP Conferencing
       solution will need consider the different RTP header fields in regards
-      to both hop-by-hop and end-to-end security. </t>
+      to both hop-by-hop and end-to-end security.</t>
     </abstract>
   </front>
 
@@ -49,17 +49,17 @@
       streams there is need to carefully consider what properties the
       different fields have, their security implications and provide
       recommendations for how they are handled. This review needs to consider
-      both hop-by-hop properties as well as the end-to-end security. </t>
+      both hop-by-hop properties as well as the end-to-end security.</t>
 
       <t>The fields analysed are that of a regular RTP packet. This is to
       consider the impact of the information that exists normally in an
-      centralized multi-party conference. </t>
+      centralized multi-party conference.</t>
     </section>
 
     <section title="Definitions">
       <t>This document uses the following definitions:<list style="hanging">
           <t hangText="Endpoint:">An RTP stream sending and/or receiving
-          entity that is part of the end-to-end security context. </t>
+          entity that is part of the end-to-end security context.</t>
 
           <t hangText="MDD:">Media Delivery Device - An RTP middlebox that
           operates according to any of the three possible <xref
@@ -99,14 +99,27 @@
 
         <t></t>
       </section>
+
+      <section title="Additional Assumptions">
+        <t>This document assumes that the originating media stream is
+        identified by the SSRC value used by the originating endpoint. This
+        SSRC value needs to be preserved to the receiving endpoint. It is
+        assumed that even if SSRC/CSRC translation is in use by an MDD, there
+        will exist an one to one mapping between originating SSRC value and
+        the SSRC/CSRC value the receiving endpoint receives. Further for MDDs
+        operating as Media Switching RTP mixers they will indicate the
+        originating SSRC as CSRC when it switches that stream into one of the
+        MDD's SSRCs. The CSRC will need to be maintained even over multiple
+        MDDs. </t>
+      </section>
     </section>
 
     <section title="RTP Packets Fields">
       <t>This section analyses each RTP packet field or part. The anlysis for
       each field should answer the following questions:<list style="empty">
-          <t>Can it be modified on path by an MDD?</t>
+          <t>Can it or needs to be modified on path by an MDD?</t>
 
-          <t>Does the receiving endpoint need the originating endpoints set
+          <t>Does the receiving endpoint need the originating endpoint's set
           value?</t>
 
           <t>Does it need end-to-end authentication?</t>
@@ -142,7 +155,7 @@
         the MDD must know that it is RTP it receives. The field may be
         hop-by-hop confidentiality protected as part of an attempt to hide
         that the packet stream is RTP, although packet analysis is likely to
-        reveal that the streams are real-time media anyway. </t>
+        reveal that the streams are real-time media anyway.</t>
       </section>
 
       <section title="Padding Indicator bit (P)">
@@ -170,11 +183,62 @@
       </section>
 
       <section title="Extension Indicator bit (X)">
-        <t>The extension indicator bit indicates if there exist an header
-        extension</t>
+        <t>The extension indicator bit indicates if the header extension part
+        is present. The MDD will be the target recipient of some RTP header
+        extensions. It can also remove the ones not necessary to reach the
+        receiving endpoint. This can result that something starting out with
+        header extensions may no longer have any on the last hop. Thus, the
+        MDD must be able to modify the X bit. Currently, there is no strong
+        argument for why a receiving endpoint needs to know that there where
+        header extensions present from the originating endpoint that has been
+        removed. It might arise if one starts using end-to-end confidentiality
+        protected header extensions and want to ensure detection of removal of
+        such header extensions by the MDD. However, other methods for ensuring
+        that is likely to exist. Conclusion is that there are no need for
+        knowing the original value. </t>
+
+        <t>There are no need for end-to-end confidentiality, nor
+        authentication. Hop-by-hop authentication shall be used to prevent
+        unnecesary erronous processing of the packet. Hop-by-hop
+        confidentiality is recommended but lack of it has very minor impact as
+        the information leaked is the presence or not of header extensions.
+        Having this knowledge may simplify payload length based attacks in
+        regards to the content. </t>
       </section>
 
       <section title="CSRC Count (CC)">
+        <t>Contributing Sources count indicates how many CSRC values that are
+        part of the CSRC field and are critical to know to correctly find the
+        start of the payload within the RTP packet. When using MDDs that
+        follow the Media Switching RTP Mixer topology (Section 3.6.2 of <xref
+        target="I-D.ietf-avtcore-rtp-topologies-update"></xref>) the MDD will
+        need to insert the originating endpoint's SSRC as CSRC value in the
+        outgoing stream when that stream contains a payload from the by the
+        CSRC identified originating stream. This results that in the MDD can
+        modify and add CSRC fields when performing switching. And in cases an
+        MDD operating like a SFM (Section 3.7 of <xref
+        target="I-D.ietf-avtcore-rtp-topologies-update"></xref>) receives a
+        switched media stream it may attempt to restore the mixed stream into
+        a number of SSRC specific streams, thus removing the CSRC field. An
+        originating endpoint is unlikely to have a need to insert an CSRC,
+        this as in PERC context it is expected that the media sources have a
+        direct relation to the endpoint. The need for an endpoint to express
+        that it generates a mixed or switched stream where it can generate
+        "end-to-end" secured payload with such properties appear to be in a
+        violation of the intended security model. The current conclusion will
+        be no need for orignal value. <list style="empty">
+            <t>Note: The possibility for originating endpoints to create a
+            CSRC list will need further discussion as it affects the
+            possibility to rely on the SSRC/CSRC value as reference to the
+            originating identity. </t>
+          </list>The CC field does not appear to be end-to-end authenticated,
+        nor confidentiality protected. The CC field shall be hop-by-hop
+        authenticated to prevent third party modifcations as it effects
+        finding the payload limit. Errors here can only lead to wasting
+        resources for further entities in the conference, and should be
+        detected as early as possible. End-to-end confidentiality is
+        recommened</t>
+
         <t></t>
       </section>
 
@@ -217,124 +281,363 @@
 
     <section anchor="Summary" title="Summery">
       <t>The following table summarizes the information from the previous
-      section. </t>
-      
+      section.</t>
+
       <texttable anchor="summaryTable" title="Summary of Handling Required">
-        <ttcol align='center'>Data</ttcol>
-        <ttcol align='center'>MDD Mod</ttcol>
-        <ttcol align='center'>Orig Needed</ttcol>
-        <ttcol align='center'>E2E Auth</ttcol>
-        <ttcol align='center'>E2E Conf</ttcol>
-        <ttcol align='center'>HBH Auth</ttcol>
-        <ttcol align='center'>HBH Conf</ttcol>
-        
-        <c> V </c>
-        <c> No</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> No</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> P </c>
-        <c> Yes</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> X </c>
-        <c> Yes</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> CC </c>
-        <c> Yes</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-                
-        <c> M </c>
-        <c> ?</c> <!-- MDD Modify -->
-        <c> ?</c> <!-- Orig Needed-->
-        <c> ?</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> PT </c>
-        <c> May</c> <!-- MDD Modify -->
-        <c> ?</c> <!-- Orig Needed-->
-        <c> ?</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> Seq No </c>
-        <c> May</c> <!-- MDD Modify -->
-        <c> Yes</c> <!-- Orig Needed-->
-        <c> Yes</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> Timestamp </c>
-        <c> May</c> <!-- MDD Modify -->
-        <c> ?</c> <!-- Orig Needed-->
-        <c> ?</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> SSRC </c>
-        <c> May</c> <!-- MDD Modify -->
-        <c> Yes</c> <!-- Orig Needed-->
-        <c> Yes</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> CSRCs </c>
-        <c> Yes</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> No</c><!-- HBH Conf-->
-        
-        <c> Extensions </c>
-        <c> Yes</c> <!-- MDD Modify -->
-        <c> No</c> <!-- Orig Needed-->
-        <c> No</c><!-- E2E Auth-->
-        <c> No</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> Some</c><!-- HBH Conf-->
-        
+        <ttcol align="center">Data</ttcol>
+
+        <ttcol align="center">MDD Mod</ttcol>
+
+        <ttcol align="center">Orig Needed</ttcol>
+
+        <ttcol align="center">E2E Auth</ttcol>
+
+        <ttcol align="center">E2E Conf</ttcol>
+
+        <ttcol align="center">HBH Auth</ttcol>
+
+        <ttcol align="center">HBH Conf</ttcol>
+
+        <c>V</c>
+
+        <c>No</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>No</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>P</c>
+
+        <c>No</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>X</c>
+
+        <c>Yes</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>CC</c>
+
+        <c>Yes</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>M</c>
+
+        <c>?</c>
+
+        <!-- MDD Modify -->
+
+        <c>?</c>
+
+        <!-- Orig Needed-->
+
+        <c>?</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>PT</c>
+
+        <c>May</c>
+
+        <!-- MDD Modify -->
+
+        <c>?</c>
+
+        <!-- Orig Needed-->
+
+        <c>?</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>Seq No</c>
+
+        <c>May</c>
+
+        <!-- MDD Modify -->
+
+        <c>Yes</c>
+
+        <!-- Orig Needed-->
+
+        <c>Yes</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>Timestamp</c>
+
+        <c>May</c>
+
+        <!-- MDD Modify -->
+
+        <c>?</c>
+
+        <!-- Orig Needed-->
+
+        <c>?</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>SSRC</c>
+
+        <c>May</c>
+
+        <!-- MDD Modify -->
+
+        <c>Yes</c>
+
+        <!-- Orig Needed-->
+
+        <c>Yes</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>CSRCs</c>
+
+        <c>Yes</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>No</c>
+
+        <!-- HBH Conf-->
+
+        <c>Extensions</c>
+
+        <c>Yes</c>
+
+        <!-- MDD Modify -->
+
+        <c>No</c>
+
+        <!-- Orig Needed-->
+
+        <c>No</c>
+
+        <!-- E2E Auth-->
+
+        <c>No</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>Some</c>
+
+        <!-- HBH Conf-->
+
         <c>Payload</c>
-        <c>No</c> <!-- MDD Modify -->
-        <c>Yes</c> <!-- Orig Needed-->
-        <c>Yes</c><!-- E2E Auth-->
-        <c>Yes</c><!-- E2E Conf-->
-        <c>Yes</c><!--HBH Auth -->
-        <c>Yes</c><!-- HBH Conf-->
-        
-        <c> Padding </c>
-        <c> No</c> <!-- MDD Modify -->
-        <c> Yes</c> <!-- Orig Needed-->
-        <c> Yes</c><!-- E2E Auth-->
-        <c> Yes</c><!-- E2E Conf-->
-        <c> Yes</c><!--HBH Auth -->
-        <c> Yes</c><!-- HBH Conf-->
-           
+
+        <c>No</c>
+
+        <!-- MDD Modify -->
+
+        <c>Yes</c>
+
+        <!-- Orig Needed-->
+
+        <c>Yes</c>
+
+        <!-- E2E Auth-->
+
+        <c>Yes</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>Yes</c>
+
+        <!-- HBH Conf-->
+
+        <c>Padding</c>
+
+        <c>No</c>
+
+        <!-- MDD Modify -->
+
+        <c>Yes</c>
+
+        <!-- Orig Needed-->
+
+        <c>Yes</c>
+
+        <!-- E2E Auth-->
+
+        <c>Yes</c>
+
+        <!-- E2E Conf-->
+
+        <c>Yes</c>
+
+        <!--HBH Auth -->
+
+        <c>Yes</c>
+
+        <!-- HBH Conf-->
       </texttable>
     </section>
-    
+
     <section anchor="IANA" title="IANA Considerations">
       <t>This document makes no request of IANA.</t>
 

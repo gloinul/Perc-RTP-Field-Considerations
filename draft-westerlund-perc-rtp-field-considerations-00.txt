@@ -77,11 +77,12 @@ Table of Contents
      3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .   5
      3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .   5
      3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .   5
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
-   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   6
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
 
 1.  Introduction
 
@@ -105,7 +106,6 @@ Table of Contents
 
    MDD:  Media Delivery Device - An RTP middlebox that operates
       according to any of the three possible RTP topologies
-
 
 
 
@@ -228,6 +228,9 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 3.3.  Extension Indicator bit (X)
 
+   The extension indicator bit indicates if there exist an header
+   extension
+
 3.4.  CSRC Count (CC)
 
 3.5.  Marker Bit (M)
@@ -248,28 +251,25 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 3.13.  Padding Octets
 
-4.  IANA Considerations
+4.  Summery
 
-   This document makes no request of IANA.
+   The following table summarizes the information from the previous
+   section.
 
-   Note to RFC Editor: this section may be removed on publication as an
-   RFC.
 
-5.  Security Considerations
 
-6.  Acknowledgements
 
-7.  Normative References
 
-   [I-D.ietf-avtcore-rtp-topologies-update]
-              Westerlund, M. and S. Wenger, "RTP Topologies", draft-
-              ietf-avtcore-rtp-topologies-update-10 (work in progress),
-              July 2015.
 
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <http://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,10 +282,61 @@ Westerlund               Expires April 14, 2016                 [Page 5]
 Internet-Draft              Abbreviated-Title               October 2015
 
 
+   +------------+-------+----------+--------+--------+--------+--------+
+   |    Data    |  MDD  |   Orig   |  E2E   |  E2E   |  HBH   |  HBH   |
+   |            |  Mod  |  Needed  |  Auth  |  Conf  |  Auth  |  Conf  |
+   +------------+-------+----------+--------+--------+--------+--------+
+   |     V      |   No  |    No    |   No   |   No   |   No   |   No   |
+   |     P      |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   |     X      |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   |     CC     |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   |     M      |   ?   |    ?     |   ?    |   No   |  Yes   |   No   |
+   |     PT     |  May  |    ?     |   ?    |   No   |  Yes   |   No   |
+   |   Seq No   |  May  |   Yes    |  Yes   |   No   |  Yes   |   No   |
+   | Timestamp  |  May  |    ?     |   ?    |   No   |  Yes   |   No   |
+   |    SSRC    |  May  |   Yes    |  Yes   |   No   |  Yes   |   No   |
+   |   CSRCs    |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   | Extensions |  Yes  |    No    |   No   |   No   |  Yes   |  Some  |
+   |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
+   |  Padding   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
+   +------------+-------+----------+--------+--------+--------+--------+
+
+                   Table 1: Summary of Handling Required
+
+5.  IANA Considerations
+
+   This document makes no request of IANA.
+
+   Note to RFC Editor: this section may be removed on publication as an
+   RFC.
+
+6.  Security Considerations
+
+7.  Acknowledgements
+
+8.  Normative References
+
+   [I-D.ietf-avtcore-rtp-topologies-update]
+              Westerlund, M. and S. Wenger, "RTP Topologies", draft-
+              ietf-avtcore-rtp-topologies-update-10 (work in progress),
+              July 2015.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <http://www.rfc-editor.org/info/rfc2119>.
+
    [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
               Jacobson, "RTP: A Transport Protocol for Real-Time
               Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
               July 2003, <http://www.rfc-editor.org/info/rfc3550>.
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 6]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
 
    [RFC6562]  Perkins, C. and JM. Valin, "Guidelines for the Use of
               Variable Bit Rate Audio with Secure RTP", RFC 6562,
@@ -333,4 +384,9 @@ Author's Address
 
 
 
-Westerlund               Expires April 14, 2016                 [Page 6]
+
+
+
+
+
+Westerlund               Expires April 14, 2016                 [Page 7]
