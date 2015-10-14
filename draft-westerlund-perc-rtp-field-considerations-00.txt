@@ -8,7 +8,7 @@ Intended status: Informational                          October 14, 2015
 Expires: April 16, 2016
 
 
-                Considerations of handling of RTP fields
+            Considerations of handling of RTP fields in PERC
               draft-westerlund-perc-rtp-considerations-00
 
 Abstract
@@ -55,7 +55,7 @@ Copyright Notice
 
 Westerlund               Expires April 16, 2016                 [Page 1]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 Table of Contents
@@ -73,18 +73,18 @@ Table of Contents
      3.6.  Payload Type (PT) . . . . . . . . . . . . . . . . . . . .   7
      3.7.  Sequence Number . . . . . . . . . . . . . . . . . . . . .   8
      3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   9
-     3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .   9
-     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .   9
-     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .   9
-   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .   9
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  10
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
+     3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  11
+     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  11
+     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  11
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  11
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  12
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  12
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
 
@@ -111,7 +111,7 @@ Table of Contents
 
 Westerlund               Expires April 16, 2016                 [Page 2]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 2.  Definitions
@@ -167,7 +167,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 3]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
    MDD's SSRCs.  The CSRC will need to be maintained even over multiple
@@ -223,7 +223,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 4]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 3.2.  Padding Indicator bit (P)
@@ -279,7 +279,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 5]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 3.4.  CSRC Count (CC)
@@ -335,7 +335,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 6]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
    The MDD could depending on semantics potentially have an interest in
@@ -391,7 +391,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 7]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
    a different value with another endpoint.  Thus, the MDD will need to
@@ -447,7 +447,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 Westerlund               Expires April 16, 2016                 [Page 8]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
       Note: Sequence number based replay is vunerable in a environment
@@ -482,7 +482,97 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 3.8.  Timestamp
 
+   The RTP timestamp expresses playout related time information.  When a
+   MDD is an media switching RTP mixer, it will need to provide a
+   consistent timeline across switches.  The timeline is also the
+   outgoing SSRC from the mixer's internal timeline, and not specific to
+   any of the originating RTP streams being switched into the stream.
+   Thus, the timestamp in relation to the originating packet will need
+   to be rewritten.
+
+   The receiving endpoint could have use of the original value.  First
+   it could be used to detect malicous rewrite attempts that forces the
+   receiver into flusing the receiver buffer or perform concealment over
+   media that otherwise would have been played out.  Secondly it can be
+   used as a protection against the delay attack discussed above in
+   Section 3.7.  However, protection against these type of attacks by
+   the MDD can be fragile and may cause more harm than gain.  For the
+   first type of attacks, it is clear that some modifications of the
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 9]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
+   timeline between originating sources are necessary.  This is first to
+   align content segments so they have matching boundaries.  Secondly,
+   as the different endpoint don't have synchronized clocks there will
+   be clock skew, thus some clock skew compensation at switch points are
+   to be expected.  For the delay attack protection also the clock skew
+   issue is present.  For both clcok skew related issues this is further
+   complicated that the clock skew compensation information is in RTCP
+   and curently under control of the MDD.  Thus, one would need to
+   consider protecting this RTCP information end-to-end.
+
+   If the original timestamp needs end-to-end authentication is
+   dependent on if one can define a delay attack protection using it.
+   If not it is likely not needed.  End-to-end confidentiality will be
+   difficult as the MDD will need to know where in the timeline a
+   particular payload belongs to.  This is also closely related to the
+   payload sequence information discussed above Section 3.7.
+
+   Hop-by-hop authentication is needed to prevent third party attacks.
+   End-to-end confidentiality is recommended as it prevents leaking
+   information about the sequence of the media and how much media is
+   packed into each payload, especially for audio.  This is coupled to
+   the protection on provide the sequence number.  At the same time a
+   third party quality monitor likely need the RTP timestamp to perform
+   its role adequately.
+
 3.9.  SSRC
+
+   The SSRC identifies the source of the RTP packet.  As each SSRC has
+   its own RTP sequence number space as well as timestamp sequence
+   collisions shall be avoided.  For the PERC usage it is also important
+   that a receiving endpoint can separate two different originating
+   sources.  The important security related issue is that unless the
+   originating RTP stream can be identified the MDD could create one
+   outgoing stream that selects packets from either of them.  This may
+   be challenging due to replay protection, but not impossible depending
+   on how the sequence number and timestamps align.  To avoid having
+   multiple identifers for the RTP packet stream, the design team has
+   proposed that the SSRC shall be unique and the original value
+   preserved to the receiving endpoint.
+
+      Note: There where no agreement on how the uniqness shall be
+      ensured and are for further discussion.
+
+   Even if the originating endpoints have unique SSRCs, it is not clear
+   if the same requirement will be extended to the MDD, and then
+   especially media switching RTP mixers that have their own SSRCs.
+   Thus translation of SSRC as a method for dealing with SSRC collisions
+   may need to be dealt with.
+
+
+
+Westerlund               Expires April 16, 2016                [Page 10]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
+   The original SSRC needs to be authenticated end-to-end to prevent the
+   splicing attack described above.  The SSRC can't be confidentiality
+   protected end-to-end as it is required by the MDD to know which
+   packets are part of the same RTP stream.
+
+   The SSRC shall be authenticated hop-by-hop to prevent splicing or
+   redirecting packets between incoming RTP streams.  It would have
+   benefits to confidentiality protect the SSRC towards third parties as
+   it would make it more difficult for such an attacker to associate
+   packets to different RTP streams, when the originating endpoint sends
+   more than one stream in the same transport flow.
 
 3.10.  CSRC List
 
@@ -495,30 +585,52 @@ Internet-Draft              Abbreviated-Title               October 2015
 4.  Summery
 
    The following table summarizes the information from the previous
-   section.
+   section.  Legend:
+
+   Yes:  Something is required to be done, or in the case of MDD
+      modification need to be possible.
+
+   No:  Something that is not to be done or needs to be done.
+
+   Rec:  Recommened to be done but not required.
+
+   May:  It can be done, but neither recommened or required (Yes).
+
+   *: Please see description in the section for specific considerations.
+
+   ?: Classification is uncertain and need further input.
 
 
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 9]
+
+
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 11]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
    +------------+-------+----------+--------+--------+--------+--------+
    |    Data    |  MDD  |   Orig   |  E2E   |  E2E   |  HBH   |  HBH   |
    |            |  Mod  |  Needed  |  Auth  |  Conf  |  Auth  |  Conf  |
    +------------+-------+----------+--------+--------+--------+--------+
-   |     V      |   No  |    No    |   No   |   No   |   No   |   No   |
-   |     P      |   No  |    No    |   No   |   No   |  Yes   |   No   |
-   |     X      |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
-   |     CC     |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
-   |     M      |   ?   |    ?     |   ?    |   No   |  Yes   |   No   |
-   |     PT     |  May  |    ?     |   ?    |   No   |  Yes   |   No   |
-   |   Seq No   |  May  |   Yes    |  Yes   |   No   |  Yes   |   No   |
-   | Timestamp  |  May  |    ?     |   ?    |   No   |  Yes   |   No   |
-   |    SSRC    |  May  |   Yes    |  Yes   |   No   |  Yes   |   No   |
+   |     V      |   No  |    No    |   No   |   No   |  May   |  May   |
+   |     P      |   No  |   Yes    |  Yes   |  May?  |  Yes   |  Rec   |
+   |     X      |  Yes  |    No    |   No   |   No   |  Yes   |  Rec   |
+   |     CC     |  Yes  |    No    |   No   |   No   |  Yes   |  Rec   |
+   |     M      |  No?  |   Yes    |  Rec   |  Rec?  |  Yes   |  Yes   |
+   |     PT     |  Yes  |   Yes?   |  Rec?  |  No*   |  Yes   |  Rec   |
+   |   Seq No   |  Yes  |   Yes*   |  Yes   |   No   |  Yes   |  Rec   |
+   | Timestamp  |  Yes  |    ?     |   ?    |   No   |  Yes   |  Rec   |
+   |    SSRC    |  May  |   Yes    |  Yes   |   No   |  Yes   |  Rec   |
    |   CSRCs    |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
    | Extensions |  Yes  |    No    |   No   |   No   |  Yes   |  Some  |
    |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
@@ -557,9 +669,9 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 
 
-Westerlund               Expires April 16, 2016                [Page 10]
+Westerlund               Expires April 16, 2016                [Page 12]
 
-Internet-Draft              Abbreviated-Title               October 2015
+Internet-Draft         PERC handling of RTP fields          October 2015
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -613,4 +725,4 @@ Author's Address
 
 
 
-Westerlund               Expires April 16, 2016                [Page 11]
+Westerlund               Expires April 16, 2016                [Page 13]
