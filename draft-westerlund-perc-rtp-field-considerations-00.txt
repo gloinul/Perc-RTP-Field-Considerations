@@ -77,13 +77,13 @@ Table of Contents
      3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  11
      3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  11
      3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  11
-   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  12
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  12
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  12
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  12
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  13
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  13
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  13
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
@@ -565,7 +565,9 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    The original SSRC needs to be authenticated end-to-end to prevent the
    splicing attack described above.  The SSRC can't be confidentiality
    protected end-to-end as it is required by the MDD to know which
-   packets are part of the same RTP stream.
+   packets are part of the same RTP stream.  Note that for an media
+   switching mixer, the SSRC field will not be the original one, instead
+   that value is expected to be put in the CSRC field.
 
    The SSRC shall be authenticated hop-by-hop to prevent splicing or
    redirecting packets between incoming RTP streams.  It would have
@@ -576,9 +578,45 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 3.10.  CSRC List
 
+   The contributing source list contains the SSRC values of the RTP
+   streams that contributed to the media content of this packet.  In the
+   PERC case, where the payload is end-to-end and not mixed in the
+   middle boxes the field is expected to contain a single value.  This
+   is for the case where the originating SSRC is moved into the CSRC
+   field with the MDD acts as an media switching mixer.  As discusssed
+   in Section 3.4 there could in theory be cases where an endpoint is
+   performing mixes and thus need to include multiple CSRC values, but
+   it appears to be contradicting the security model.
+
+   The MDD needs to be able to add the CSRC field when not present.  As
+   it populates it with the orignating SSRC value, it simple moves the
+   information from one place to another.  Thus, the authentication and
+   confidentiality requirements will be the same as for the SSRC field.
+   End-to-End authentication of the CSRC value is performed, when the
+   field is present instead of the SSRC field.  Here CSRC fields from an
+   originating endpoint will be an issue that requires special
+   considerations.  End-to-end confidentiality is not possible, due to
+   the MDD moving the field from the SSRC place.
+
+   Hop-by-hop the CSRC list shall be authenticated to prevent a third
+   party to corrupt the field.  Hop-by-hop confidentiality is
+   recommended but not requried.
+
 3.11.  Header Extension
 
 3.12.  Payload
+
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 11]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
 3.13.  Padding Octets
 
@@ -600,24 +638,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    ?: Classification is uncertain and need further input.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 11]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
    +------------+-------+----------+--------+--------+--------+--------+
    |    Data    |  MDD  |   Orig   |  E2E   |  E2E   |  HBH   |  HBH   |
    |            |  Mod  |  Needed  |  Auth  |  Conf  |  Auth  |  Conf  |
@@ -630,8 +650,8 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    |     PT     |  Yes  |   Yes?   |  Rec?  |  No*   |  Yes   |  Rec   |
    |   Seq No   |  Yes  |   Yes*   |  Yes   |   No   |  Yes   |  Rec   |
    | Timestamp  |  Yes  |    ?     |   ?    |   No   |  Yes   |  Rec   |
-   |    SSRC    |  May  |   Yes    |  Yes   |   No   |  Yes   |  Rec   |
-   |   CSRCs    |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   |    SSRC    |  May  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
+   |   CSRCs    |  Yes  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
    | Extensions |  Yes  |    No    |   No   |   No   |  Yes   |  Some  |
    |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
    |  Padding   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
@@ -645,6 +665,14 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    Note to RFC Editor: this section may be removed on publication as an
    RFC.
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 12]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
 6.  Security Considerations
 
@@ -665,14 +693,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               Westerlund, M. and S. Wenger, "RTP Topologies", draft-
               ietf-avtcore-rtp-topologies-update-10 (work in progress),
               July 2015.
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 12]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -699,26 +719,6 @@ Author's Address
 
    Phone: +46 10 714 82 87
    Email: magnus.westerlund@ericsson.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

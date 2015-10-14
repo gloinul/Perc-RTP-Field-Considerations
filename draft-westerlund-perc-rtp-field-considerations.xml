@@ -209,7 +209,7 @@
         regards to the content.</t>
       </section>
 
-      <section title="CSRC Count (CC)">
+      <section anchor="sec-cc" title="CSRC Count (CC)">
         <t>Contributing Sources count indicates how many CSRC values that are
         part of the CSRC field and are critical to know to correctly find the
         start of the payload within the RTP packet. When using MDDs that
@@ -457,7 +457,9 @@
         <t>The original SSRC needs to be authenticated end-to-end to prevent
         the splicing attack described above. The SSRC can't be confidentiality
         protected end-to-end as it is required by the MDD to know which
-        packets are part of the same RTP stream.</t>
+        packets are part of the same RTP stream. Note that for an media
+        switching mixer, the SSRC field will not be the original one, instead
+        that value is expected to be put in the CSRC field. </t>
 
         <t>The SSRC shall be authenticated hop-by-hop to prevent splicing or
         redirecting packets between incoming RTP streams. It would have
@@ -468,7 +470,29 @@
       </section>
 
       <section title="CSRC List">
-        <t></t>
+        <t>The contributing source list contains the SSRC values of the RTP
+        streams that contributed to the media content of this packet. In the
+        PERC case, where the payload is end-to-end and not mixed in the middle
+        boxes the field is expected to contain a single value. This is for the
+        case where the originating SSRC is moved into the CSRC field with the
+        MDD acts as an media switching mixer. As discusssed in <xref
+        target="sec-cc"></xref> there could in theory be cases where an
+        endpoint is performing mixes and thus need to include multiple CSRC
+        values, but it appears to be contradicting the security model.</t>
+
+        <t>The MDD needs to be able to add the CSRC field when not present. As
+        it populates it with the orignating SSRC value, it simple moves the
+        information from one place to another. Thus, the authentication and
+        confidentiality requirements will be the same as for the SSRC field.
+        End-to-End authentication of the CSRC value is performed, when the
+        field is present instead of the SSRC field. Here CSRC fields from an
+        originating endpoint will be an issue that requires special
+        considerations. End-to-end confidentiality is not possible, due to the
+        MDD moving the field from the SSRC place.</t>
+
+        <t>Hop-by-hop the CSRC list shall be authenticated to prevent a third
+        party to corrupt the field. Hop-by-hop confidentiality is recommended
+        but not requried. </t>
       </section>
 
       <section title="Header Extension">
@@ -734,11 +758,11 @@
 
         <!-- MDD Modify -->
 
-        <c>Yes</c>
+        <c>Yes*</c>
 
         <!-- Orig Needed-->
 
-        <c>Yes</c>
+        <c>Yes*</c>
 
         <!-- E2E Auth-->
 
@@ -760,11 +784,11 @@
 
         <!-- MDD Modify -->
 
-        <c>No</c>
+        <c>Yes*</c>
 
         <!-- Orig Needed-->
 
-        <c>No</c>
+        <c>Yes*</c>
 
         <!-- E2E Auth-->
 
@@ -776,7 +800,7 @@
 
         <!--HBH Auth -->
 
-        <c>No</c>
+        <c>Rec</c>
 
         <!-- HBH Conf-->
 
