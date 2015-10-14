@@ -524,39 +524,139 @@
         are all information from the originating endpoint intended to
         receiving endpoint. In the case of teh SDES information, likely also
         needed by the MDD. This is information that all should be
-        authenticated end-to-end to ensure that the MDD can't modify it. </t>
+        authenticated end-to-end to ensure that the MDD can't modify it. SPMTE
+        time-codes, Coordination of video orientation (CVO), Region of
+        Interest (ROI) are all information that the MDD lack need to see to be
+        able to perform its task to forward media appropriately. Thus
+        end-to-end confidentiality is recommended to be applied. </t>
 
         <section title="Transmission Time offsets">
-          <t>RFC 5450</t>
+          <t>The <xref target="RFC5450">Transmission Time offsets</xref> are
+          header extension that encodes the time of transmission of the RTP
+          packet in relation to the RTP timestamp. Being directly related to
+          the transmission of the whole RTP packet it is non-sensitive
+          information from a privacy and confidentiality aspect. It only
+          provides more detaild information in what sequence a packet actually
+          was sent, information that both the timestamp and sequence number
+          provide. </t>
+
+          <t>The authentication of this information can be valuable. However,
+          as the MDD receives and the potentially fowards it, it has limited
+          end-to-end value, and it is more appropriate for an MDD to rewrite
+          this header when forwarding the packet to provide hop-by-hop
+          transport information. Thus, hop-by-hop authentication is
+          recommended. </t>
         </section>
 
         <section title="SMPTE time-code mapping">
-          <t>RFC 5484</t>
+          <t>The <xref target="RFC5484">SMPTE time-code mapping</xref> is
+          providing SMPTE time codes associated with the RTP packet. This
+          information is meta data to the media content in the payload.
+          End-to-end authentication is recommend to ensure that the data is
+          non-modified from the originating endpoint. The meta data may be
+          privacy sensitive as it reveals information about the timeline for
+          the content the receiver sees, inluding seeking in stored contentet
+          provided into a conferencing context. There appear to be no reason
+          why the MDD should have access to this, and end-to-end
+          confidentiality is recommended. </t>
+
+          <t>Hop-by-hop authentication is recommended, and confidentiality
+          should be applied if not used end-to-end. </t>
         </section>
 
         <section title="Synchronisation metadata">
-          <t>RFC 6051</t>
+          <t><xref target="RFC6051">Synchronisation metadata</xref> is an
+          header extension that provides the NTP and RTP Timestamp information
+          binding, just like in the RTCP Sender Report. This is information
+          that a MDD may need to perform its work efficiently, especially when
+          functioning as an media switching mixer. The information could be
+          end-to-end authenticated to prevent the MDD from intefering with it,
+          and if included by an originating endpoint it can be assumed that it
+          is intended for any current receiver of this RTP stream. The
+          information does not appear to be sensitive from a confidentiality
+          perspective.</t>
         </section>
 
         <section title="Client to Mixer Audio Level">
-          <t>RFC 6464</t>
+          <t>The <xref target="RFC6464">Client-to-Mixer Audio Level
+          Indication</xref> is very interesting and problematic header
+          extension. It contains the audio level of the audio included in the
+          RTP packet. If that information is provided frequently enough is may
+          provide an attacker of good possibilities as of deducing what is
+          being said <xref target="RFC6562"></xref>. It is also is important
+          meta data needed by an MDD if it is to perform the RTP stream
+          switching based on who is talking. </t>
+
+          <t>This header may require end-to-end confidentiality, this is for
+          cases where the meta data is inteded for the receiving endpoints
+          only, and not the MDDs. In cases of cascaded MDDs it could
+          potentially be of interest to have authentication of the origin, but
+          with a method that the MDDs could verify, and which would allow the
+          final MDD before a receiving endpoint to remove the header
+          extension. </t>
+
+          <t>The header shall be hop-by-hop confidentiality protected and
+          authenticated. </t>
         </section>
 
         <section title="Mixer-to-client audio level">
-          <t>RFC 6465</t>
+          <t><xref target="RFC6465">Mixer-to-Client Audio Level
+          Indication</xref> is an providing audio levels for individual
+          contributing sources within an audio mix. As the PERC system does
+          not support content mixing, this header does not appear relevant.
+          </t>
         </section>
 
         <section title="Coordination of video orientation (CVO)">
-          <t>[3GPP TS 26.114, version 12.5.0]</t>
+          <t>The Coordination of video orientation (CVO) [3GPP TS 26.114,
+          version 12.5.0] provides a receiver with meta data about a video
+          stream indicating which direction in the video is "up". Thus
+          enabling the receiving endpoint to display the video content
+          correctly oriented.</t>
+
+          <t>This information is meta data about the media content itself. It
+          does not appear to be information required by an MDD for its task.
+          Therefore this information should be end-to-end confidentiality
+          protected as well as authenticated. Hop-by-hop authentication is
+          recommended and confidentiality as well if not applied end-to-end.
+          </t>
         </section>
 
         <section title="Region-of-interest (ROI)">
-          <t>[3GPP TS 26.114, version 13.1.0]</t>
+          <t>Region-of-interest (ROI) [3GPP TS 26.114, version 13.1.0] is an
+          header extension providing the receiving endpoint information that
+          the video image it receives is a covering a particular sub-area of
+          what is originally captured. There exist other protocol mechanism to
+          select the region of interest. </t>
+
+          <t>This information is meta data about the media content itself. It
+          does not appear to be information required by an MDD for its task.
+          Therefore this information should be end-to-end confidentiality
+          protected as well as authenticated. Hop-by-hop authentication is
+          recommended and confidentiality as well if not applied
+          end-to-end.</t>
         </section>
 
         <section title="SDES Information">
-          <t>draft-ietf-avtext-sdes-hdr-ext and
-          draft-ietf-mmusic-sdp-bundle-negotiation</t>
+          <t>The SDES header extension is defined in <xref
+          target="I-D.ietf-avtext-sdes-hdr-ext"></xref> and provides SDES
+          CNAME and <xref
+          target="I-D.ietf-mmusic-sdp-bundle-negotiation">MID</xref>
+          information associated with the originating SSRC. </t>
+
+          <t>The privacy sensitve nature of the CNAME is dependent of how it
+          is generated. If generated with privacy in <xref
+          target="RFC7022">mind</xref> then it will not need to be end-to-end
+          confientiality protected. If not it may require end-to-end
+          confidentiality. The MID values are references into SDP media
+          descriptions and are not expected to be sensitive. This information
+          is provided by the originating endpoint, and being able to trust it
+          is highly valuabel, thus it should be end-to-end authenticated, and
+          preferably also be possible to validate by the MDD. </t>
+
+          <t>The hop-by-hop should be authenticated to avoid wasting
+          resources, and the hop-by-hop confiendiality reduces the tracking
+          possibilities by third parties. </t>
         </section>
       </section>
 
@@ -1004,9 +1104,25 @@
 
       <?rfc include='reference.RFC.5285'?>
 
+      <?rfc include='reference.RFC.5450'?>
+
+      <?rfc include='reference.RFC.5484'?>
+
+      <?rfc include='reference.RFC.6051'?>
+
+      <?rfc include='reference.RFC.6464'?>
+
+      <?rfc include='reference.RFC.6465'?>
+
       <?rfc include='reference.RFC.6562'?>
 
+      <?rfc include='reference.RFC.7022'?>
+
       <?rfc include='reference.I-D.ietf-avtcore-rtp-topologies-update'?>
+
+      <?rfc include='reference.I-D.ietf-avtext-sdes-hdr-ext'?>
+
+      <?rfc include='reference.I-D.ietf-mmusic-sdp-bundle-negotiation'?>
     </references>
   </back>
 </rfc>

@@ -77,22 +77,22 @@ Table of Contents
      3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  11
      3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  12
        3.11.1.  Transmission Time offsets  . . . . . . . . . . . . .  12
-       3.11.2.  SMPTE time-code mapping  . . . . . . . . . . . . . .  12
-       3.11.3.  Synchronisation metadata . . . . . . . . . . . . . .  12
+       3.11.2.  SMPTE time-code mapping  . . . . . . . . . . . . . .  13
+       3.11.3.  Synchronisation metadata . . . . . . . . . . . . . .  13
        3.11.4.  Client to Mixer Audio Level  . . . . . . . . . . . .  13
-       3.11.5.  Mixer-to-client audio level  . . . . . . . . . . . .  13
-       3.11.6.  Coordination of video orientation (CVO)  . . . . . .  13
-       3.11.7.  Region-of-interest (ROI) . . . . . . . . . . . . . .  13
-       3.11.8.  SDES Information . . . . . . . . . . . . . . . . . .  13
-     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  13
-     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  13
-   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  14
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  15
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  15
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
+       3.11.5.  Mixer-to-client audio level  . . . . . . . . . . . .  14
+       3.11.6.  Coordination of video orientation (CVO)  . . . . . .  14
+       3.11.7.  Region-of-interest (ROI) . . . . . . . . . . . . . .  14
+       3.11.8.  SDES Information . . . . . . . . . . . . . . . . . .  14
+     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  15
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  15
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  15
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  16
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  16
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  17
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  17
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  17
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  18
 
 1.  Introduction
 
@@ -649,23 +649,23 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    intended to receiving endpoint.  In the case of teh SDES information,
    likely also needed by the MDD.  This is information that all should
    be authenticated end-to-end to ensure that the MDD can't modify it.
+   SPMTE time-codes, Coordination of video orientation (CVO), Region of
+   Interest (ROI) are all information that the MDD lack need to see to
+   be able to perform its task to forward media appropriately.  Thus
+   end-to-end confidentiality is recommended to be applied.
 
 3.11.1.  Transmission Time offsets
 
-   RFC 5450
+   The Transmission Time offsets [RFC5450] are header extension that
+   encodes the time of transmission of the RTP packet in relation to the
+   RTP timestamp.  Being directly related to the transmission of the
+   whole RTP packet it is non-sensitive information from a privacy and
+   confidentiality aspect.  It only provides more detaild information in
+   what sequence a packet actually was sent, information that both the
+   timestamp and sequence number provide.
 
-3.11.2.  SMPTE time-code mapping
-
-   RFC 5484
-
-3.11.3.  Synchronisation metadata
-
-   RFC 6051
-
-
-
-
-
+   The authentication of this information can be valuable.  However, as
+   the MDD receives and the potentially fowards it, it has limited end-
 
 
 
@@ -674,26 +674,127 @@ Westerlund               Expires April 16, 2016                [Page 12]
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   to-end value, and it is more appropriate for an MDD to rewrite this
+   header when forwarding the packet to provide hop-by-hop transport
+   information.  Thus, hop-by-hop authentication is recommended.
+
+3.11.2.  SMPTE time-code mapping
+
+   The SMPTE time-code mapping [RFC5484] is providing SMPTE time codes
+   associated with the RTP packet.  This information is meta data to the
+   media content in the payload.  End-to-end authentication is recommend
+   to ensure that the data is non-modified from the originating
+   endpoint.  The meta data may be privacy sensitive as it reveals
+   information about the timeline for the content the receiver sees,
+   inluding seeking in stored contentet provided into a conferencing
+   context.  There appear to be no reason why the MDD should have access
+   to this, and end-to-end confidentiality is recommended.
+
+   Hop-by-hop authentication is recommended, and confidentiality should
+   be applied if not used end-to-end.
+
+3.11.3.  Synchronisation metadata
+
+   Synchronisation metadata [RFC6051] is an header extension that
+   provides the NTP and RTP Timestamp information binding, just like in
+   the RTCP Sender Report.  This is information that a MDD may need to
+   perform its work efficiently, especially when functioning as an media
+   switching mixer.  The information could be end-to-end authenticated
+   to prevent the MDD from intefering with it, and if included by an
+   originating endpoint it can be assumed that it is intended for any
+   current receiver of this RTP stream.  The information does not appear
+   to be sensitive from a confidentiality perspective.
+
 3.11.4.  Client to Mixer Audio Level
 
-   RFC 6464
+   The Client-to-Mixer Audio Level Indication [RFC6464] is very
+   interesting and problematic header extension.  It contains the audio
+   level of the audio included in the RTP packet.  If that information
+   is provided frequently enough is may provide an attacker of good
+   possibilities as of deducing what is being said [RFC6562].  It is
+   also is important meta data needed by an MDD if it is to perform the
+   RTP stream switching based on who is talking.
+
+   This header may require end-to-end confidentiality, this is for cases
+   where the meta data is inteded for the receiving endpoints only, and
+   not the MDDs.  In cases of cascaded MDDs it could potentially be of
+   interest to have authentication of the origin, but with a method that
+   the MDDs could verify, and which would allow the final MDD before a
+   receiving endpoint to remove the header extension.
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 13]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
+   The header shall be hop-by-hop confidentiality protected and
+   authenticated.
 
 3.11.5.  Mixer-to-client audio level
 
-   RFC 6465
+   Mixer-to-Client Audio Level Indication [RFC6465] is an providing
+   audio levels for individual contributing sources within an audio mix.
+   As the PERC system does not support content mixing, this header does
+   not appear relevant.
 
 3.11.6.  Coordination of video orientation (CVO)
 
-   [3GPP TS 26.114, version 12.5.0]
+   The Coordination of video orientation (CVO) [3GPP TS 26.114, version
+   12.5.0] provides a receiver with meta data about a video stream
+   indicating which direction in the video is "up".  Thus enabling the
+   receiving endpoint to display the video content correctly oriented.
+
+   This information is meta data about the media content itself.  It
+   does not appear to be information required by an MDD for its task.
+   Therefore this information should be end-to-end confidentiality
+   protected as well as authenticated.  Hop-by-hop authentication is
+   recommended and confidentiality as well if not applied end-to-end.
 
 3.11.7.  Region-of-interest (ROI)
 
-   [3GPP TS 26.114, version 13.1.0]
+   Region-of-interest (ROI) [3GPP TS 26.114, version 13.1.0] is an
+   header extension providing the receiving endpoint information that
+   the video image it receives is a covering a particular sub-area of
+   what is originally captured.  There exist other protocol mechanism to
+   select the region of interest.
+
+   This information is meta data about the media content itself.  It
+   does not appear to be information required by an MDD for its task.
+   Therefore this information should be end-to-end confidentiality
+   protected as well as authenticated.  Hop-by-hop authentication is
+   recommended and confidentiality as well if not applied end-to-end.
 
 3.11.8.  SDES Information
 
-   draft-ietf-avtext-sdes-hdr-ext and draft-ietf-mmusic-sdp-bundle-
-   negotiation
+   The SDES header extension is defined in
+   [I-D.ietf-avtext-sdes-hdr-ext] and provides SDES CNAME and MID
+   [I-D.ietf-mmusic-sdp-bundle-negotiation] information associated with
+   the originating SSRC.
+
+   The privacy sensitve nature of the CNAME is dependent of how it is
+   generated.  If generated with privacy in mind [RFC7022] then it will
+   not need to be end-to-end confientiality protected.  If not it may
+   require end-to-end confidentiality.  The MID values are references
+
+
+
+Westerlund               Expires April 16, 2016                [Page 14]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
+   into SDP media descriptions and are not expected to be sensitive.
+   This information is provided by the originating endpoint, and being
+   able to trust it is highly valuabel, thus it should be end-to-end
+   authenticated, and preferably also be possible to validate by the
+   MDD.
+
+   The hop-by-hop should be authenticated to avoid wasting resources,
+   and the hop-by-hop confiendiality reduces the tracking possibilities
+   by third parties.
 
 3.12.  Payload
 
@@ -719,17 +820,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    padding.  Hop-by-hop confidentiality is not necessary due to the end-
    to-end one, but would reduce tracking possibilities.
 
-
-
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 13]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
 4.  Summery
 
    The following table summarizes the information from the previous
@@ -743,6 +833,14 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    Rec:  Recommened to be done but not required.
 
    May:  It can be done, but neither recommened or required (Yes).
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 15]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
    *: Please see description in the section for specific considerations.
 
@@ -776,16 +874,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    Note to RFC Editor: this section may be removed on publication as an
    RFC.
 
-
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 14]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
 6.  Security Considerations
 
    The purpose of this document include discussing the security issue
@@ -802,6 +890,14 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    CC, M, PT fields as they reveal important information around the
    payload and its length.  Based on this I recommend that we not only
    consider SRTP as outer security layer to provide hop-by-hop
+
+
+
+Westerlund               Expires April 16, 2016                [Page 16]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
    confidentiality and integrity protection, but also methods that
    protect the whole RTP packet, like DTLS.
 
@@ -818,6 +914,18 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               ietf-avtcore-rtp-topologies-update-10 (work in progress),
               July 2015.
 
+   [I-D.ietf-avtext-sdes-hdr-ext]
+              Westerlund, M., Burman, B., Even, R., and M. Zanaty, "RTP
+              Header Extension for RTCP Source Description Items",
+              draft-ietf-avtext-sdes-hdr-ext-02 (work in progress), July
+              2015.
+
+   [I-D.ietf-mmusic-sdp-bundle-negotiation]
+              Holmberg, C., Alvestrand, H., and C. Jennings,
+              "Negotiating Media Multiplexing Using the Session
+              Description Protocol (SDP)", draft-ietf-mmusic-sdp-bundle-
+              negotiation-23 (work in progress), July 2015.
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -832,20 +940,49 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               Header Extensions", RFC 5285, DOI 10.17487/RFC5285, July
               2008, <http://www.rfc-editor.org/info/rfc5285>.
 
+   [RFC5450]  Singer, D. and H. Desineni, "Transmission Time Offsets in
+              RTP Streams", RFC 5450, DOI 10.17487/RFC5450, March 2009,
+              <http://www.rfc-editor.org/info/rfc5450>.
 
 
 
 
 
-Westerlund               Expires April 16, 2016                [Page 15]
+
+Westerlund               Expires April 16, 2016                [Page 17]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   [RFC5484]  Singer, D., "Associating Time-Codes with RTP Streams",
+              RFC 5484, DOI 10.17487/RFC5484, March 2009,
+              <http://www.rfc-editor.org/info/rfc5484>.
+
+   [RFC6051]  Perkins, C. and T. Schierl, "Rapid Synchronisation of RTP
+              Flows", RFC 6051, DOI 10.17487/RFC6051, November 2010,
+              <http://www.rfc-editor.org/info/rfc6051>.
+
+   [RFC6464]  Lennox, J., Ed., Ivov, E., and E. Marocco, "A Real-time
+              Transport Protocol (RTP) Header Extension for Client-to-
+              Mixer Audio Level Indication", RFC 6464,
+              DOI 10.17487/RFC6464, December 2011,
+              <http://www.rfc-editor.org/info/rfc6464>.
+
+   [RFC6465]  Ivov, E., Ed., Marocco, E., Ed., and J. Lennox, "A Real-
+              time Transport Protocol (RTP) Header Extension for Mixer-
+              to-Client Audio Level Indication", RFC 6465,
+              DOI 10.17487/RFC6465, December 2011,
+              <http://www.rfc-editor.org/info/rfc6465>.
 
    [RFC6562]  Perkins, C. and JM. Valin, "Guidelines for the Use of
               Variable Bit Rate Audio with Secure RTP", RFC 6562,
               DOI 10.17487/RFC6562, March 2012,
               <http://www.rfc-editor.org/info/rfc6562>.
+
+   [RFC7022]  Begen, A., Perkins, C., Wing, D., and E. Rescorla,
+              "Guidelines for Choosing RTP Control Protocol (RTCP)
+              Canonical Names (CNAMEs)", RFC 7022, DOI 10.17487/RFC7022,
+              September 2013, <http://www.rfc-editor.org/info/rfc7022>.
 
 Author's Address
 
@@ -868,29 +1005,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 16]
+Westerlund               Expires April 16, 2016                [Page 18]
