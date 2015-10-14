@@ -75,16 +75,24 @@ Table of Contents
      3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   9
      3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .  10
      3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  11
-     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  11
-     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  12
-   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  12
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  13
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  13
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  13
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
+     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  12
+       3.11.1.  Transmission Time offsets  . . . . . . . . . . . . .  12
+       3.11.2.  SMPTE time-code mapping  . . . . . . . . . . . . . .  12
+       3.11.3.  Synchronisation metadata . . . . . . . . . . . . . .  12
+       3.11.4.  Client to Mixer Audio Level  . . . . . . . . . . . .  13
+       3.11.5.  Mixer-to-client audio level  . . . . . . . . . . . .  13
+       3.11.6.  Coordination of video orientation (CVO)  . . . . . .  13
+       3.11.7.  Region-of-interest (ROI) . . . . . . . . . . . . . .  13
+       3.11.8.  SDES Information . . . . . . . . . . . . . . . . . .  13
+     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .  13
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .  13
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .  14
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  15
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
 
 1.  Introduction
 
@@ -99,20 +107,15 @@ Table of Contents
    consider the impact of the information that exists normally in an
    centralized multi-party conference.
 
-   This document is a working document, and not intended to be published
-   as an RFC.
-
-
-
-
-
-
 
 
 Westerlund               Expires April 16, 2016                 [Page 2]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   This document is a working document, and not intended to be published
+   as an RFC.
 
 2.  Definitions
 
@@ -159,9 +162,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    needs to be preserved to the receiving endpoint.  It is assumed that
    even if SSRC/CSRC translation is in use by an MDD, there will exist
    an one to one mapping between originating SSRC value and the SSRC/
-   CSRC value the receiving endpoint receives.  Further for MDDs
-   operating as Media Switching RTP mixers they will indicate the
-   originating SSRC as CSRC when it switches that stream into one of the
 
 
 
@@ -170,6 +170,9 @@ Westerlund               Expires April 16, 2016                 [Page 3]
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   CSRC value the receiving endpoint receives.  Further for MDDs
+   operating as Media Switching RTP mixers they will indicate the
+   originating SSRC as CSRC when it switches that stream into one of the
    MDD's SSRCs.  The CSRC will need to be maintained even over multiple
    MDDs.
 
@@ -215,9 +218,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    be confidentiality protected end-to-end as the MDD must know that it
    is RTP it receives.  The field may be hop-by-hop confidentiality
    protected as part of an attempt to hide that the packet stream is
-   RTP, although packet analysis is likely to reveal that the streams
-   are real-time media anyway.
-
 
 
 
@@ -225,6 +225,9 @@ Westerlund               Expires April 16, 2016                 [Page 4]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   RTP, although packet analysis is likely to reveal that the streams
+   are real-time media anyway.
 
 3.2.  Padding Indicator bit (P)
 
@@ -270,9 +273,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    erronous processing of the packet.  Hop-by-hop confidentiality is
    recommended but lack of it has very minor impact as the information
    leaked is the presence or not of header extensions.  Having this
-   knowledge may simplify payload length based attacks in regards to the
-   content.
-
 
 
 
@@ -281,6 +281,9 @@ Westerlund               Expires April 16, 2016                 [Page 5]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   knowledge may simplify payload length based attacks in regards to the
+   content.
 
 3.4.  CSRC Count (CC)
 
@@ -327,9 +330,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    use.  Two dominant semantics are in use, but not limited to these
    two.  Video primarily use it to indicate the last packet carrying
    part of an encoded video frame.  Audio primarily use it to indicate
-   the start of a talk spurt, indicating where an receiver could adjust
-   its jitter buffer and playout.
-
 
 
 
@@ -337,6 +337,9 @@ Westerlund               Expires April 16, 2016                 [Page 6]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   the start of a talk spurt, indicating where an receiver could adjust
+   its jitter buffer and playout.
 
    The MDD could depending on semantics potentially have an interest in
    setting the marker.  One example could be an MDD that like to set an
@@ -383,9 +386,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    The MDD is expected to be required to rewrite the PT values when
    forwarding the payloads.  The reason for this is that in many
-   signalling contexts the binding between a payload type value and the
-   payload format configuration will only have local meaning.  And the
-   PT value identifying a particular codec configuration is not unlikely
 
 
 
@@ -394,6 +394,9 @@ Westerlund               Expires April 16, 2016                 [Page 7]
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   signalling contexts the binding between a payload type value and the
+   payload format configuration will only have local meaning.  And the
+   PT value identifying a particular codec configuration is not unlikely
    a different value with another endpoint.  Thus, the MDD will need to
    maintain translation tables for each ingress and egress pair.
 
@@ -439,9 +442,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    something semantically equivalent.  The reasons for this is replay
    protection.  If the receiving endpoint knows through an end-to-end
    authenticated way the sequence in which the payloads was originated,
-   the receiver can prevent using payloads that are replays from
-   previous points in the RTP stream.
-
 
 
 
@@ -449,6 +449,9 @@ Westerlund               Expires April 16, 2016                 [Page 8]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   the receiver can prevent using payloads that are replays from
+   previous points in the RTP stream.
 
       Note: Sequence number based replay is vunerable in a environment
       where the MDD can perform swithcing operations from an attack
@@ -495,9 +498,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    receiver into flusing the receiver buffer or perform concealment over
    media that otherwise would have been played out.  Secondly it can be
    used as a protection against the delay attack discussed above in
-   Section 3.7.  However, protection against these type of attacks by
-   the MDD can be fragile and may cause more harm than gain.  For the
-   first type of attacks, it is clear that some modifications of the
 
 
 
@@ -506,6 +506,9 @@ Westerlund               Expires April 16, 2016                 [Page 9]
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   Section 3.7.  However, protection against these type of attacks by
+   the MDD can be fragile and may cause more harm than gain.  For the
+   first type of attacks, it is clear that some modifications of the
    timeline between originating sources are necessary.  This is first to
    align content segments so they have matching boundaries.  Secondly,
    as the different endpoint don't have synchronized clocks there will
@@ -551,9 +554,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    Even if the originating endpoints have unique SSRCs, it is not clear
    if the same requirement will be extended to the MDD, and then
-   especially media switching RTP mixers that have their own SSRCs.
-   Thus translation of SSRC as a method for dealing with SSRC collisions
-   may need to be dealt with.
 
 
 
@@ -561,6 +561,10 @@ Westerlund               Expires April 16, 2016                [Page 10]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   especially media switching RTP mixers that have their own SSRCs.
+   Thus translation of SSRC as a method for dealing with SSRC collisions
+   may need to be dealt with.
 
    The original SSRC needs to be authenticated end-to-end to prevent the
    splicing attack described above.  The SSRC can't be confidentiality
@@ -602,10 +606,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    party to corrupt the field.  Hop-by-hop confidentiality is
    recommended but not requried.
 
-3.11.  Header Extension
-
-3.12.  Payload
-
 
 
 
@@ -618,7 +618,117 @@ Westerlund               Expires April 16, 2016                [Page 11]
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+3.11.  Header Extension
+
+   This section assumes that the RTP header extension is used following
+   the mechanism in [RFC5285].  Thus the header extension can contain
+   multiple different extensions as agreed and identified according to
+   signalling.  Each header extension format in use are assigned an
+   identifer that are per endpoint and RTP session agreed.  This results
+   in that the MDD are likely to need to renumber them between ingress
+   and egrees if they forward the extension.  In addition a number of
+   header extensions in use will be intended and targeted to the MDD.
+   When MDDs are cascade they will likely need to forward the extension
+   between themselves, and only on the last leg towards the receiving
+   endpoint remove them.
+
+   What security properties that are needed will be highly dependent on
+   the header extension and their content.  Therefore a number of header
+   extensions are analysed in this section to determine if they contain
+   material that need end-to-end authentication or also end-to-end
+   confidentiality.
+
+   The current summary of the known information is the following.  The
+   MDD needs to modify the IDs and add or remove some header extensions.
+   There are header extensions that really should use hop-by-hop
+   confidentiality (See Audio levels), and all should have hop-by-hop
+   authentication to prevent modification impacting the MDD's processing
+   and forwarding decision.  The SMPTE time-code mapping, the
+   Cordination of Video Orientation, the Region of Interest and the SDES
+   information are all information from the originating endpoint
+   intended to receiving endpoint.  In the case of teh SDES information,
+   likely also needed by the MDD.  This is information that all should
+   be authenticated end-to-end to ensure that the MDD can't modify it.
+
+3.11.1.  Transmission Time offsets
+
+   RFC 5450
+
+3.11.2.  SMPTE time-code mapping
+
+   RFC 5484
+
+3.11.3.  Synchronisation metadata
+
+   RFC 6051
+
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 12]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
+3.11.4.  Client to Mixer Audio Level
+
+   RFC 6464
+
+3.11.5.  Mixer-to-client audio level
+
+   RFC 6465
+
+3.11.6.  Coordination of video orientation (CVO)
+
+   [3GPP TS 26.114, version 12.5.0]
+
+3.11.7.  Region-of-interest (ROI)
+
+   [3GPP TS 26.114, version 13.1.0]
+
+3.11.8.  SDES Information
+
+   draft-ietf-avtext-sdes-hdr-ext and draft-ietf-mmusic-sdp-bundle-
+   negotiation
+
+3.12.  Payload
+
+   The payload is the payload format with the media content that is to
+   be confidentiality protected end-to-end.  Thus, the MDD shall not be
+   able to modify it.  It needs to be end-to-end confidentiality
+   protected and authenticated.  The payload should be hop-by-hop
+   authenticated to prevent wasting downstream resources by forwarding a
+   corrupt or modified payload.  Hop-by-hop confidentiality is not
+   strictly needed as it will be protected end-to-end.  However, to
+   prevent tracking of how particular payloads are forwarded, it could
+   be confidentiality protected also hop-by-hop.
+
 3.13.  Padding Octets
+
+   The padding octets that come after the regular payload are often used
+   to hide payload length variations when that is sensitive and could
+   lead to breach of the confidentiality of the content.  Thus, it
+   important that the amount of padding can't be determined by either
+   the MDD or any third party.  Thus, end-to-end confidentiality and
+   authentication is necessary.  Hop-by-hop authentication is
+   recommended to prevent wasting resources on corrupt or modified
+   padding.  Hop-by-hop confidentiality is not necessary due to the end-
+   to-end one, but would reduce tracking possibilities.
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 13]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
 4.  Summery
 
@@ -652,9 +762,9 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    | Timestamp  |  Yes  |    ?     |   ?    |   No   |  Yes   |  Rec   |
    |    SSRC    |  May  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
    |   CSRCs    |  Yes  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
-   | Extensions |  Yes  |    No    |   No   |   No   |  Yes   |  Some  |
-   |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
-   |  Padding   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  Yes   |
+   | Extensions |  Yes  |   No?    | Some?  |  No?   |  Yes   |  Some  |
+   |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  May?  |
+   |  Padding   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  May?  |
    +------------+-------+----------+--------+--------+--------+--------+
 
                    Table 1: Summary of Handling Required
@@ -669,7 +779,9 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-Westerlund               Expires April 16, 2016                [Page 12]
+
+
+Westerlund               Expires April 16, 2016                [Page 14]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -679,7 +791,19 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    The purpose of this document include discussing the security issue
    around the information in the RTP header.  That is covered above in
    the document.  Worth noting is the differences in recommendation for
-   hop-by-hop confidentiality compared to regular SRTP.
+   hop-by-hop confidentiality compared to regular SRTP.  Where SRTP for
+   allowing third party monitors as well as enabling the use of IP/UDP/
+   RTP header compressors the RTP header information is in clear text
+   and only integrity protected.
+
+   With the increased privacy concerns and known attacks based on
+   payload length analys, it has become more important to consider
+   confidentiality protect the whole RTP header, but specifically the X,
+   CC, M, PT fields as they reveal important information around the
+   payload and its length.  Based on this I recommend that we not only
+   consider SRTP as outer security layer to provide hop-by-hop
+   confidentiality and integrity protection, but also methods that
+   protect the whole RTP packet, like DTLS.
 
 7.  Contributors
 
@@ -704,6 +828,20 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
               July 2003, <http://www.rfc-editor.org/info/rfc3550>.
 
+   [RFC5285]  Singer, D. and H. Desineni, "A General Mechanism for RTP
+              Header Extensions", RFC 5285, DOI 10.17487/RFC5285, July
+              2008, <http://www.rfc-editor.org/info/rfc5285>.
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 15]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
    [RFC6562]  Perkins, C. and JM. Valin, "Guidelines for the Use of
               Variable Bit Rate Audio with Secure RTP", RFC 6562,
               DOI 10.17487/RFC6562, March 2012,
@@ -725,4 +863,34 @@ Author's Address
 
 
 
-Westerlund               Expires April 16, 2016                [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 16]

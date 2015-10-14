@@ -496,15 +496,92 @@
       </section>
 
       <section title="Header Extension">
-        <t></t>
+        <t>This section assumes that the RTP header extension is used
+        following the mechanism in <xref target="RFC5285"></xref>. Thus the
+        header extension can contain multiple different extensions as agreed
+        and identified according to signalling. Each header extension format
+        in use are assigned an identifer that are per endpoint and RTP session
+        agreed. This results in that the MDD are likely to need to renumber
+        them between ingress and egrees if they forward the extension. In
+        addition a number of header extensions in use will be intended and
+        targeted to the MDD. When MDDs are cascade they will likely need to
+        forward the extension between themselves, and only on the last leg
+        towards the receiving endpoint remove them. </t>
+
+        <t>What security properties that are needed will be highly dependent
+        on the header extension and their content. Therefore a number of
+        header extensions are analysed in this section to determine if they
+        contain material that need end-to-end authentication or also
+        end-to-end confidentiality. </t>
+
+        <t>The current summary of the known information is the following. The
+        MDD needs to modify the IDs and add or remove some header extensions.
+        There are header extensions that really should use hop-by-hop
+        confidentiality (See Audio levels), and all should have hop-by-hop
+        authentication to prevent modification impacting the MDD's processing
+        and forwarding decision. The SMPTE time-code mapping, the Cordination
+        of Video Orientation, the Region of Interest and the SDES information
+        are all information from the originating endpoint intended to
+        receiving endpoint. In the case of teh SDES information, likely also
+        needed by the MDD. This is information that all should be
+        authenticated end-to-end to ensure that the MDD can't modify it. </t>
+
+        <section title="Transmission Time offsets">
+          <t>RFC 5450</t>
+        </section>
+
+        <section title="SMPTE time-code mapping">
+          <t>RFC 5484</t>
+        </section>
+
+        <section title="Synchronisation metadata">
+          <t>RFC 6051</t>
+        </section>
+
+        <section title="Client to Mixer Audio Level">
+          <t>RFC 6464</t>
+        </section>
+
+        <section title="Mixer-to-client audio level">
+          <t>RFC 6465</t>
+        </section>
+
+        <section title="Coordination of video orientation (CVO)">
+          <t>[3GPP TS 26.114, version 12.5.0]</t>
+        </section>
+
+        <section title="Region-of-interest (ROI)">
+          <t>[3GPP TS 26.114, version 13.1.0]</t>
+        </section>
+
+        <section title="SDES Information">
+          <t>draft-ietf-avtext-sdes-hdr-ext and
+          draft-ietf-mmusic-sdp-bundle-negotiation</t>
+        </section>
       </section>
 
       <section title="Payload">
-        <t></t>
+        <t>The payload is the payload format with the media content that is to
+        be confidentiality protected end-to-end. Thus, the MDD shall not be
+        able to modify it. It needs to be end-to-end confidentiality protected
+        and authenticated. The payload should be hop-by-hop authenticated to
+        prevent wasting downstream resources by forwarding a corrupt or
+        modified payload. Hop-by-hop confidentiality is not strictly needed as
+        it will be protected end-to-end. However, to prevent tracking of how
+        particular payloads are forwarded, it could be confidentiality
+        protected also hop-by-hop.</t>
       </section>
 
       <section anchor="sec-padding-octets" title="Padding Octets">
-        <t></t>
+        <t>The padding octets that come after the regular payload are often
+        used to hide payload length variations when that is sensitive and
+        could lead to breach of the confidentiality of the content. Thus, it
+        important that the amount of padding can't be determined by either the
+        MDD or any third party. Thus, end-to-end confidentiality and
+        authentication is necessary. Hop-by-hop authentication is recommended
+        to prevent wasting resources on corrupt or modified padding.
+        Hop-by-hop confidentiality is not necessary due to the end-to-end one,
+        but would reduce tracking possibilities. </t>
       </section>
     </section>
 
@@ -810,15 +887,15 @@
 
         <!-- MDD Modify -->
 
-        <c>No</c>
+        <c>No?</c>
 
         <!-- Orig Needed-->
 
-        <c>No</c>
+        <c>Some?</c>
 
         <!-- E2E Auth-->
 
-        <c>No</c>
+        <c>No?</c>
 
         <!-- E2E Conf-->
 
@@ -852,7 +929,7 @@
 
         <!--HBH Auth -->
 
-        <c>Yes</c>
+        <c>May?</c>
 
         <!-- HBH Conf-->
 
@@ -878,7 +955,7 @@
 
         <!--HBH Auth -->
 
-        <c>Yes</c>
+        <c>May?</c>
 
         <!-- HBH Conf-->
       </texttable>
@@ -895,7 +972,19 @@
       <t>The purpose of this document include discussing the security issue
       around the information in the RTP header. That is covered above in the
       document. Worth noting is the differences in recommendation for
-      hop-by-hop confidentiality compared to regular SRTP. </t>
+      hop-by-hop confidentiality compared to regular SRTP. Where SRTP for
+      allowing third party monitors as well as enabling the use of IP/UDP/RTP
+      header compressors the RTP header information is in clear text and only
+      integrity protected.</t>
+
+      <t>With the increased privacy concerns and known attacks based on
+      payload length analys, it has become more important to consider
+      confidentiality protect the whole RTP header, but specifically the X,
+      CC, M, PT fields as they reveal important information around the payload
+      and its length. Based on this I recommend that we not only consider SRTP
+      as outer security layer to provide hop-by-hop confidentiality and
+      integrity protection, but also methods that protect the whole RTP
+      packet, like DTLS. </t>
     </section>
 
     <section title="Contributors">
@@ -912,6 +1001,8 @@
       <?rfc include="reference.RFC.2119"?>
 
       <?rfc include='reference.RFC.3550'?>
+
+      <?rfc include='reference.RFC.5285'?>
 
       <?rfc include='reference.RFC.6562'?>
 
