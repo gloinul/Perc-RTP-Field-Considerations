@@ -860,7 +860,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    | Timestamp  |  Yes  |    ?     |   ?    |   No   |  Yes   |  Rec   |
    |    SSRC    |  May  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
    |   CSRCs    |  Yes  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
-   | Extensions |  Yes  |   No?    | Some?  |  No?   |  Yes   |  Some  |
+   | Extensions |  Yes  |  Some?   | Some?  | Some?  |  Yes   |  Some  |
    |  Payload   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  May?  |
    |  Padding   |   No  |   Yes    |  Yes   |  Yes   |  Yes   |  May?  |
    +------------+-------+----------+--------+--------+--------+--------+
