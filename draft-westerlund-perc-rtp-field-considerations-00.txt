@@ -4,8 +4,8 @@
 
 Network Working Group                                      M. Westerlund
 Internet-Draft                                                  Ericsson
-Intended status: Informational                          October 12, 2015
-Expires: April 14, 2016
+Intended status: Informational                          October 14, 2015
+Expires: April 16, 2016
 
 
                 Considerations of handling of RTP fields
@@ -32,7 +32,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 14, 2016.
+   This Internet-Draft will expire on April 16, 2016.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Westerlund               Expires April 14, 2016                 [Page 1]
+Westerlund               Expires April 16, 2016                 [Page 1]
 
 Internet-Draft              Abbreviated-Title               October 2015
 
@@ -61,28 +61,30 @@ Internet-Draft              Abbreviated-Title               October 2015
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Definitions . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Definitions . . . . . . . . . . . . . . . . . . . . . . . . .   3
      2.1.  Connection Case . . . . . . . . . . . . . . . . . . . . .   3
-   3.  RTP Packets Fields  . . . . . . . . . . . . . . . . . . . . .   3
+     2.2.  Additional Assumptions  . . . . . . . . . . . . . . . . .   3
+   3.  RTP Packets Fields  . . . . . . . . . . . . . . . . . . . . .   4
      3.1.  Version Field (V) . . . . . . . . . . . . . . . . . . . .   4
-     3.2.  Padding Indicator bit (P) . . . . . . . . . . . . . . . .   4
+     3.2.  Padding Indicator bit (P) . . . . . . . . . . . . . . . .   5
      3.3.  Extension Indicator bit (X) . . . . . . . . . . . . . . .   5
-     3.4.  CSRC Count (CC) . . . . . . . . . . . . . . . . . . . . .   5
-     3.5.  Marker Bit (M)  . . . . . . . . . . . . . . . . . . . . .   5
-     3.6.  Payload Type (PT) . . . . . . . . . . . . . . . . . . . .   5
-     3.7.  Sequence Number . . . . . . . . . . . . . . . . . . . . .   5
-     3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   5
-     3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .   5
-     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .   5
-     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .   5
-     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .   5
-     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .   5
-   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .   5
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
-   8.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
+     3.4.  CSRC Count (CC) . . . . . . . . . . . . . . . . . . . . .   6
+     3.5.  Marker Bit (M)  . . . . . . . . . . . . . . . . . . . . .   6
+     3.6.  Payload Type (PT) . . . . . . . . . . . . . . . . . . . .   7
+     3.7.  Sequence Number . . . . . . . . . . . . . . . . . . . . .   8
+     3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .   9
+     3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .   9
+     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .   9
+     3.12. Payload . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     3.13. Padding Octets  . . . . . . . . . . . . . . . . . . . . .   9
+   4.  Summery . . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  10
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -97,6 +99,21 @@ Table of Contents
    consider the impact of the information that exists normally in an
    centralized multi-party conference.
 
+   This document is a working document, and not intended to be published
+   as an RFC.
+
+
+
+
+
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 2]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
 2.  Definitions
 
    This document uses the following definitions:
@@ -106,14 +123,6 @@ Table of Contents
 
    MDD:  Media Delivery Device - An RTP middlebox that operates
       according to any of the three possible RTP topologies
-
-
-
-Westerlund               Expires April 14, 2016                 [Page 2]
-
-Internet-Draft              Abbreviated-Title               October 2015
-
-
       [I-D.ietf-avtcore-rtp-topologies-update] that is possible in the
       PERC system:
 
@@ -143,14 +152,35 @@ Internet-Draft              Abbreviated-Title               October 2015
 
                                  Figure 1
 
+2.2.  Additional Assumptions
+
+   This document assumes that the originating media stream is identified
+   by the SSRC value used by the originating endpoint.  This SSRC value
+   needs to be preserved to the receiving endpoint.  It is assumed that
+   even if SSRC/CSRC translation is in use by an MDD, there will exist
+   an one to one mapping between originating SSRC value and the SSRC/
+   CSRC value the receiving endpoint receives.  Further for MDDs
+   operating as Media Switching RTP mixers they will indicate the
+   originating SSRC as CSRC when it switches that stream into one of the
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 3]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+   MDD's SSRCs.  The CSRC will need to be maintained even over multiple
+   MDDs.
+
 3.  RTP Packets Fields
 
    This section analyses each RTP packet field or part.  The anlysis for
    each field should answer the following questions:
 
-      Can it be modified on path by an MDD?
+      Can it or needs to be modified on path by an MDD?
 
-      Does the receiving endpoint need the originating endpoints set
+      Does the receiving endpoint need the originating endpoint's set
       value?
 
       Does it need end-to-end authentication?
@@ -163,11 +193,6 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 
 
-
-
-Westerlund               Expires April 14, 2016                 [Page 3]
-
-Internet-Draft              Abbreviated-Title               October 2015
 
 
    Some general considerations apply.  Fields that are end-to-end
@@ -193,6 +218,14 @@ Internet-Draft              Abbreviated-Title               October 2015
    RTP, although packet analysis is likely to reveal that the streams
    are real-time media anyway.
 
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 4]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
 3.2.  Padding Indicator bit (P)
 
    The padding bit is an indicator for the presence of the padding
@@ -216,28 +249,236 @@ Internet-Draft              Abbreviated-Title               October 2015
    end-to-end.  The padding bit should be hop-by-hop authenticated to
    protect if end-to-end authentication is not used.
 
+3.3.  Extension Indicator bit (X)
+
+   The extension indicator bit indicates if the header extension part is
+   present.  The MDD will be the target recipient of some RTP header
+   extensions.  It can also remove the ones not necessary to reach the
+   receiving endpoint.  This can result that something starting out with
+   header extensions may no longer have any on the last hop.  Thus, the
+   MDD must be able to modify the X bit.  Currently, there is no strong
+   argument for why a receiving endpoint needs to know that there where
+   header extensions present from the originating endpoint that has been
+   removed.  It might arise if one starts using end-to-end
+   confidentiality protected header extensions and want to ensure
+   detection of removal of such header extensions by the MDD.  However,
+   other methods for ensuring that is likely to exist.  Conclusion is
+   that there are no need for knowing the original value.
+
+   There are no need for end-to-end confidentiality, nor authentication.
+   Hop-by-hop authentication shall be used to prevent unnecesary
+   erronous processing of the packet.  Hop-by-hop confidentiality is
+   recommended but lack of it has very minor impact as the information
+   leaked is the presence or not of header extensions.  Having this
+   knowledge may simplify payload length based attacks in regards to the
+   content.
 
 
 
 
 
-Westerlund               Expires April 14, 2016                 [Page 4]
+Westerlund               Expires April 16, 2016                 [Page 5]
 
 Internet-Draft              Abbreviated-Title               October 2015
 
 
-3.3.  Extension Indicator bit (X)
-
-   The extension indicator bit indicates if there exist an header
-   extension
-
 3.4.  CSRC Count (CC)
+
+   Contributing Sources count indicates how many CSRC values that are
+   part of the CSRC field and are critical to know to correctly find the
+   start of the payload within the RTP packet.  When using MDDs that
+   follow the Media Switching RTP Mixer topology (Section 3.6.2 of
+   [I-D.ietf-avtcore-rtp-topologies-update]) the MDD will need to insert
+   the originating endpoint's SSRC as CSRC value in the outgoing stream
+   when that stream contains a payload from the by the CSRC identified
+   originating stream.  This results that in the MDD can modify and add
+   CSRC fields when performing switching.  And in cases an MDD operating
+   like a SFM (Section 3.7 of [I-D.ietf-avtcore-rtp-topologies-update])
+   receives a switched media stream it may attempt to restore the mixed
+   stream into a number of SSRC specific streams, thus removing the CSRC
+   field.  An originating endpoint is unlikely to have a need to insert
+   an CSRC, this as in PERC context it is expected that the media
+   sources have a direct relation to the endpoint.  The need for an
+   endpoint to express that it generates a mixed or switched stream
+   where it can generate "end-to-end" secured payload with such
+   properties appear to be in a violation of the intended security
+   model.  The current conclusion will be no need for orignal value.
+
+      Note: The possibility for originating endpoints to create a CSRC
+      list will need further discussion as it affects the possibility to
+      rely on the SSRC/CSRC value as reference to the originating
+      identity.
+
+   The CC field does not appear to need end-to-end authenticated, nor
+   confidentiality protected.  The CC field shall be hop-by-hop
+   authenticated to prevent third party modifcations as it effects
+   finding the payload limit.  Errors here can only lead to wasting
+   resources for further entities in the conference, and should be
+   detected as early as possible.  Erronous payload delimitation due to
+   error in the CC field will result in the receiving endpoint's
+   integrity verification of the end-to-end payload will fail.  End-to-
+   end confidentiality is recommened as the CC field allows a third
+   party to better determine the RTP payload size, thus being
+   information with some privacy sensitivity
 
 3.5.  Marker Bit (M)
 
+   The marker bit semantics are dependent on the RTP payload format in
+   use.  Two dominant semantics are in use, but not limited to these
+   two.  Video primarily use it to indicate the last packet carrying
+   part of an encoded video frame.  Audio primarily use it to indicate
+   the start of a talk spurt, indicating where an receiver could adjust
+   its jitter buffer and playout.
+
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 6]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+   The MDD could depending on semantics potentially have an interest in
+   setting the marker.  One example could be an MDD that like to set an
+   marker bit for audio to indicate the start of a media stream when
+   swtiching in/on a particular originating endpoint's stream.  In the
+   discussion about this for PERC the conclusion is that an MDD can use
+   other methods for indicating the switch in event.  The main argument
+   for this is to avoid having to understand the semantics of the
+   payload currently present.  Especially as codec switches can change
+   the semantics in the middle of an ongoing conference session.  The
+   marker bit is meta data about the stream that can be relevant for
+   knowing where appropriate switching points are, depending on the
+   semantics.
+
+   The receiving endpoint's need for original value from the originating
+   endpoint is dependent on the semantics.  However, for many semantics
+   it is important for the originating value is know by the receiving
+   endpoint.  Therefore the recommendation is to require the originating
+   value to be made available to the receiving endpoint.
+
+   The recommendation is to use end-to-end authenticaiton of the value.
+   End-to-end confidentiality needs exits as the marker bit can carry
+   semantics direclty related to the content encoded.  Audio's common
+   semantics as start of speech burst, is telling the passive monitoring
+   something on the ongoing flow of information.  This needs to be
+   balanced against the potential needs for the MDD to have this
+   information for better function, like knowing where to switch.
+
+   The marker bit should be both end-to-end authenticated as well as
+   confidentiality protected.  This is to prevent modification of this
+   important piece of information to avoid that the MDD react to
+   manipulated data.  The confidentiality is there to prevent third
+   parties from learning the information, potentially privacy sensitive.
+
 3.6.  Payload Type (PT)
 
+   The payload type identies the RTP payload format and thus normally
+   the encoding of the media content in the payload.  The dominant usage
+   is to use some type of signalling protocol to agree on a mapping
+   between a payload format and its parameters following the payload
+   formats MIME type and the 7-bit field values.  There exist some
+   statically assigned codecs, but these values can still be assigned to
+   other payload format configurations by the signalling.
+
+   The MDD is expected to be required to rewrite the PT values when
+   forwarding the payloads.  The reason for this is that in many
+   signalling contexts the binding between a payload type value and the
+   payload format configuration will only have local meaning.  And the
+   PT value identifying a particular codec configuration is not unlikely
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 7]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+   a different value with another endpoint.  Thus, the MDD will need to
+   maintain translation tables for each ingress and egress pair.
+
+   As knowing the correct payload format and codec configuration is
+   cruical to be able to correctly decode the received payload, it is in
+   the interest of the receiving endpoint to know the originating
+   payload format and codec configuration.  This would indicate a need
+   to know the original value of the PT field.  Unfortunately that is
+   not sufficient to securly verify that no malicious changes has
+   occurded on the path by a third party or the MDDs.  The receiving
+   endpoint would need to know also how the originating PT values map
+   against the payload format and its parameters to verify correctness.
+
+   End-to-end authentication of original value is recommended given that
+   the receiving endpoint can also get the payload format configuration.
+   End-to-end confidentiality could be desirable as it simplifies for an
+   attacker to know which codec is used, or at least detect when the
+   codec changes.  When doing content analytics it simplifies to know
+   the codec, so the codecs behaviour can be accounted for.  However,
+   this is not cruical information, and it appears very difficult to
+   confidentiality protect the PT field value in respect to the MDD.
+
+   Hop-by-hop authentication is important to prevent thrid-party
+   modifications and avoid wasting resources by forwarding erronous
+   information.  Hob-by-hop confidentiality is recommended by not
+   cruical as the information leakage can be limited to knowing when the
+   same codec is being used.  If the signalling is kept confidential
+   towards any third party, then this minimal leakage is achieved.  If
+   one uses payload formats that has static mappings without remapping
+   them, then the codec will be known by third parties.  The payload
+   type is needed in third party quality monitors that gather statitics
+   about the RTP packet stream as it passes a measuring point.
+
 3.7.  Sequence Number
+
+   The MDD will need to modify the originating sequence number when it
+   performs any switching or on/off operations on the RTP stream.  This
+   to ensure that the outgoing RTP stream has consistent sequence
+   numbers with the number of packets actually sent, rather then how
+   many that is being received at the ingress.
+
+   The receiving endpoint likely need the originating sequence number or
+   something semantically equivalent.  The reasons for this is replay
+   protection.  If the receiving endpoint knows through an end-to-end
+   authenticated way the sequence in which the payloads was originated,
+   the receiver can prevent using payloads that are replays from
+   previous points in the RTP stream.
+
+
+
+
+Westerlund               Expires April 16, 2016                 [Page 8]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
+
+      Note: Sequence number based replay is vunerable in a environment
+      where the MDD can perform swithcing operations from an attack
+      using delaying of packets, rathern than replaying them.  Due to
+      the switching operation the receiving endpoint will need to accept
+      any sequence number that is greater than previously received, as
+      it lacks knowledge about how many payloads the originating
+      endpoint has sent in the time interval since the last payload was
+      received.  Thus an MDD can select to send any payload between the
+      last forwarded and the latest received from the origin.
+
+   End-to-End authentication of the original payload seqence number is
+   likely required.  End-to-end confidentiality is not possible as the
+   MDDs needs to know in which sequence the payloads where sent.  Being
+   able to re-order the payloads could help improving the
+   confidentiality of the media content as analysis using randomly
+   reordered packets would be significantly more difficult.  However,
+   due to the real-time properties, such actions are unlikely to be
+   feasible.  However, if any such deliberate reordering would be
+   attempted, the original sequence number would need to be
+   confidentiality protected.
+
+   Hop-by-hop authentication of the sequence number is recommended to
+   prevent attacks on the receiver buffer, including forcing the
+   receiver to discard other packets.  Hop-by-hop confidentiality is
+   recommened but not required.  This as the goal would be to attempt to
+   hide the correct sequence, across unintentional or intentional
+   reordering, and enable detection of lost packets.  Such knowledge has
+   some use in content analysis.  At the same time having this
+   information in the clear enables third party monitoiring.
 
 3.8.  Timestamp
 
@@ -260,24 +501,7 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Westerlund               Expires April 14, 2016                 [Page 5]
+Westerlund               Expires April 16, 2016                 [Page 9]
 
 Internet-Draft              Abbreviated-Title               October 2015
 
@@ -287,7 +511,7 @@ Internet-Draft              Abbreviated-Title               October 2015
    |            |  Mod  |  Needed  |  Auth  |  Conf  |  Auth  |  Conf  |
    +------------+-------+----------+--------+--------+--------+--------+
    |     V      |   No  |    No    |   No   |   No   |   No   |   No   |
-   |     P      |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
+   |     P      |   No  |    No    |   No   |   No   |  Yes   |   No   |
    |     X      |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
    |     CC     |  Yes  |    No    |   No   |   No   |  Yes   |   No   |
    |     M      |   ?   |    ?     |   ?    |   No   |  Yes   |   No   |
@@ -312,14 +536,31 @@ Internet-Draft              Abbreviated-Title               October 2015
 
 6.  Security Considerations
 
-7.  Acknowledgements
+   The purpose of this document include discussing the security issue
+   around the information in the RTP header.  That is covered above in
+   the document.  Worth noting is the differences in recommendation for
+   hop-by-hop confidentiality compared to regular SRTP.
 
-8.  Normative References
+7.  Contributors
+
+   Cullen Jennings contributed the summary table.
+
+8.  Acknowledgements
+
+9.  Normative References
 
    [I-D.ietf-avtcore-rtp-topologies-update]
               Westerlund, M. and S. Wenger, "RTP Topologies", draft-
               ietf-avtcore-rtp-topologies-update-10 (work in progress),
               July 2015.
+
+
+
+
+Westerlund               Expires April 16, 2016                [Page 10]
+
+Internet-Draft              Abbreviated-Title               October 2015
+
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -330,13 +571,6 @@ Internet-Draft              Abbreviated-Title               October 2015
               Jacobson, "RTP: A Transport Protocol for Real-Time
               Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
               July 2003, <http://www.rfc-editor.org/info/rfc3550>.
-
-
-
-Westerlund               Expires April 14, 2016                 [Page 6]
-
-Internet-Draft              Abbreviated-Title               October 2015
-
 
    [RFC6562]  Perkins, C. and JM. Valin, "Guidelines for the Use of
               Variable Bit Rate Audio with Secure RTP", RFC 6562,
@@ -379,14 +613,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-Westerlund               Expires April 14, 2016                 [Page 7]
+Westerlund               Expires April 16, 2016                [Page 11]

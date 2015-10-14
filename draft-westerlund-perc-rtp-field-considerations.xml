@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date day="12" month="October" year="2015" />
+    <date day="14" month="October" year="2015" />
 
     <abstract>
       <t>This draft discusses how the Privacy Enhanced RTP Conferencing
@@ -54,6 +54,9 @@
       <t>The fields analysed are that of a regular RTP packet. This is to
       consider the impact of the information that exists normally in an
       centralized multi-party conference.</t>
+
+      <t>This document is a working document, and not intended to be published
+      as an RFC.</t>
     </section>
 
     <section title="Definitions">
@@ -110,7 +113,7 @@
         operating as Media Switching RTP mixers they will indicate the
         originating SSRC as CSRC when it switches that stream into one of the
         MDD's SSRCs. The CSRC will need to be maintained even over multiple
-        MDDs. </t>
+        MDDs.</t>
       </section>
     </section>
 
@@ -195,7 +198,7 @@
         protected header extensions and want to ensure detection of removal of
         such header extensions by the MDD. However, other methods for ensuring
         that is likely to exist. Conclusion is that there are no need for
-        knowing the original value. </t>
+        knowing the original value.</t>
 
         <t>There are no need for end-to-end confidentiality, nor
         authentication. Hop-by-hop authentication shall be used to prevent
@@ -203,7 +206,7 @@
         confidentiality is recommended but lack of it has very minor impact as
         the information leaked is the presence or not of header extensions.
         Having this knowledge may simplify payload length based attacks in
-        regards to the content. </t>
+        regards to the content.</t>
       </section>
 
       <section title="CSRC Count (CC)">
@@ -230,28 +233,157 @@
             <t>Note: The possibility for originating endpoints to create a
             CSRC list will need further discussion as it affects the
             possibility to rely on the SSRC/CSRC value as reference to the
-            originating identity. </t>
-          </list>The CC field does not appear to be end-to-end authenticated,
-        nor confidentiality protected. The CC field shall be hop-by-hop
-        authenticated to prevent third party modifcations as it effects
-        finding the payload limit. Errors here can only lead to wasting
-        resources for further entities in the conference, and should be
-        detected as early as possible. End-to-end confidentiality is
-        recommened</t>
+            originating identity.</t>
+          </list>The CC field does not appear to need end-to-end
+        authenticated, nor confidentiality protected. The CC field shall be
+        hop-by-hop authenticated to prevent third party modifcations as it
+        effects finding the payload limit. Errors here can only lead to
+        wasting resources for further entities in the conference, and should
+        be detected as early as possible. Erronous payload delimitation due to
+        error in the CC field will result in the receiving endpoint's
+        integrity verification of the end-to-end payload will fail. End-to-end
+        confidentiality is recommened as the CC field allows a third party to
+        better determine the RTP payload size, thus being information with
+        some privacy sensitivity</t>
 
         <t></t>
       </section>
 
       <section title="Marker Bit (M)">
-        <t></t>
+        <t>The marker bit semantics are dependent on the RTP payload format in
+        use. Two dominant semantics are in use, but not limited to these two.
+        Video primarily use it to indicate the last packet carrying part of an
+        encoded video frame. Audio primarily use it to indicate the start of a
+        talk spurt, indicating where an receiver could adjust its jitter
+        buffer and playout.</t>
+
+        <t>The MDD could depending on semantics potentially have an interest
+        in setting the marker. One example could be an MDD that like to set an
+        marker bit for audio to indicate the start of a media stream when
+        swtiching in/on a particular originating endpoint's stream. In the
+        discussion about this for PERC the conclusion is that an MDD can use
+        other methods for indicating the switch in event. The main argument
+        for this is to avoid having to understand the semantics of the payload
+        currently present. Especially as codec switches can change the
+        semantics in the middle of an ongoing conference session. The marker
+        bit is meta data about the stream that can be relevant for knowing
+        where appropriate switching points are, depending on the
+        semantics.</t>
+
+        <t>The receiving endpoint's need for original value from the
+        originating endpoint is dependent on the semantics. However, for many
+        semantics it is important for the originating value is know by the
+        receiving endpoint. Therefore the recommendation is to require the
+        originating value to be made available to the receiving endpoint.</t>
+
+        <t>The recommendation is to use end-to-end authenticaiton of the
+        value. End-to-end confidentiality needs exits as the marker bit can
+        carry semantics direclty related to the content encoded. Audio's
+        common semantics as start of speech burst, is telling the passive
+        monitoring something on the ongoing flow of information. This needs to
+        be balanced against the potential needs for the MDD to have this
+        information for better function, like knowing where to switch.</t>
+
+        <t>The marker bit should be both end-to-end authenticated as well as
+        confidentiality protected. This is to prevent modification of this
+        important piece of information to avoid that the MDD react to
+        manipulated data. The confidentiality is there to prevent third
+        parties from learning the information, potentially privacy
+        sensitive.</t>
       </section>
 
       <section title="Payload Type (PT)">
-        <t></t>
+        <t>The payload type identies the RTP payload format and thus normally
+        the encoding of the media content in the payload. The dominant usage
+        is to use some type of signalling protocol to agree on a mapping
+        between a payload format and its parameters following the payload
+        formats MIME type and the 7-bit field values. There exist some
+        statically assigned codecs, but these values can still be assigned to
+        other payload format configurations by the signalling.</t>
+
+        <t>The MDD is expected to be required to rewrite the PT values when
+        forwarding the payloads. The reason for this is that in many
+        signalling contexts the binding between a payload type value and the
+        payload format configuration will only have local meaning. And the PT
+        value identifying a particular codec configuration is not unlikely a
+        different value with another endpoint. Thus, the MDD will need to
+        maintain translation tables for each ingress and egress pair. </t>
+
+        <t>As knowing the correct payload format and codec configuration is
+        cruical to be able to correctly decode the received payload, it is in
+        the interest of the receiving endpoint to know the originating payload
+        format and codec configuration. This would indicate a need to know the
+        original value of the PT field. Unfortunately that is not sufficient
+        to securly verify that no malicious changes has occurded on the path
+        by a third party or the MDDs. The receiving endpoint would need to
+        know also how the originating PT values map against the payload format
+        and its parameters to verify correctness.</t>
+
+        <t>End-to-end authentication of original value is recommended given
+        that the receiving endpoint can also get the payload format
+        configuration. End-to-end confidentiality could be desirable as it
+        simplifies for an attacker to know which codec is used, or at least
+        detect when the codec changes. When doing content analytics it
+        simplifies to know the codec, so the codecs behaviour can be accounted
+        for. However, this is not cruical information, and it appears very
+        difficult to confidentiality protect the PT field value in respect to
+        the MDD. </t>
+
+        <t>Hop-by-hop authentication is important to prevent thrid-party
+        modifications and avoid wasting resources by forwarding erronous
+        information. Hob-by-hop confidentiality is recommended by not cruical
+        as the information leakage can be limited to knowing when the same
+        codec is being used. If the signalling is kept confidential towards
+        any third party, then this minimal leakage is achieved. If one uses
+        payload formats that has static mappings without remapping them, then
+        the codec will be known by third parties. The payload type is needed
+        in third party quality monitors that gather statitics about the RTP
+        packet stream as it passes a measuring point. </t>
       </section>
 
       <section title="Sequence Number">
-        <t></t>
+        <t>The MDD will need to modify the originating sequence number when it
+        performs any switching or on/off operations on the RTP stream. This to
+        ensure that the outgoing RTP stream has consistent sequence numbers
+        with the number of packets actually sent, rather then how many that is
+        being received at the ingress.</t>
+
+        <t>The receiving endpoint likely need the originating sequence number
+        or something semantically equivalent. The reasons for this is replay
+        protection. If the receiving endpoint knows through an end-to-end
+        authenticated way the sequence in which the payloads was originated,
+        the receiver can prevent using payloads that are replays from previous
+        points in the RTP stream. <list style="empty">
+            <t>Note: Sequence number based replay is vunerable in a
+            environment where the MDD can perform swithcing operations from an
+            attack using delaying of packets, rathern than replaying them. Due
+            to the switching operation the receiving endpoint will need to
+            accept any sequence number that is greater than previously
+            received, as it lacks knowledge about how many payloads the
+            originating endpoint has sent in the time interval since the last
+            payload was received. Thus an MDD can select to send any payload
+            between the last forwarded and the latest received from the
+            origin.</t>
+          </list></t>
+
+        <t>End-to-End authentication of the original payload seqence number is
+        likely required. End-to-end confidentiality is not possible as the
+        MDDs needs to know in which sequence the payloads where sent. Being
+        able to re-order the payloads could help improving the confidentiality
+        of the media content as analysis using randomly reordered packets
+        would be significantly more difficult. However, due to the real-time
+        properties, such actions are unlikely to be feasible. However, if any
+        such deliberate reordering would be attempted, the original sequence
+        number would need to be confidentiality protected. </t>
+
+        <t>Hop-by-hop authentication of the sequence number is recommended to
+        prevent attacks on the receiver buffer, including forcing the receiver
+        to discard other packets. Hop-by-hop confidentiality is recommened but
+        not required. This as the goal would be to attempt to hide the correct
+        sequence, across unintentional or intentional reordering, and enable
+        detection of lost packets. Such knowledge has some use in content
+        analysis. At the same time having this information in the clear
+        enables third party monitoiring. </t>
       </section>
 
       <section title="Timestamp">
@@ -646,7 +778,14 @@
     </section>
 
     <section anchor="Security" title="Security Considerations">
-      <t></t>
+      <t>The purpose of this document include discussing the security issue
+      around the information in the RTP header. That is covered above in the
+      document. Worth noting is the differences in recommendation for
+      hop-by-hop confidentiality compared to regular SRTP. </t>
+    </section>
+
+    <section title="Contributors">
+      <t>Cullen Jennings contributed the summary table.</t>
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">
