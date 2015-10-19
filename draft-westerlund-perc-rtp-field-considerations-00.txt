@@ -4,12 +4,12 @@
 
 Network Working Group                                      M. Westerlund
 Internet-Draft                                                  Ericsson
-Intended status: Informational                          October 14, 2015
-Expires: April 16, 2016
+Intended status: Informational                          October 19, 2015
+Expires: April 21, 2016
 
 
-            Considerations of handling of RTP fields in PERC
-              draft-westerlund-perc-rtp-considerations-00
+           Handling Considerations for the RTP fields in PERC
+           draft-westerlund-perc-rtp-field-considerations-00
 
 Abstract
 
@@ -32,7 +32,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 16, 2016.
+   This Internet-Draft will expire on April 21, 2016.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 1]
+Westerlund               Expires April 21, 2016                 [Page 1]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -74,11 +74,11 @@ Table of Contents
      3.7.  Sequence Number . . . . . . . . . . . . . . . . . . . . .   9
      3.8.  Timestamp . . . . . . . . . . . . . . . . . . . . . . . .  10
      3.9.  SSRC  . . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  11
-     3.11. Header Extension  . . . . . . . . . . . . . . . . . . . .  12
+     3.10. CSRC List . . . . . . . . . . . . . . . . . . . . . . . .  12
+     3.11. Header Extensions . . . . . . . . . . . . . . . . . . . .  12
        3.11.1.  Transmission Time offsets  . . . . . . . . . . . . .  13
        3.11.2.  SMPTE time-code mapping  . . . . . . . . . . . . . .  13
-       3.11.3.  Synchronisation metadata . . . . . . . . . . . . . .  13
+       3.11.3.  Synchronisation metadata . . . . . . . . . . . . . .  14
        3.11.4.  Client to Mixer Audio Level  . . . . . . . . . . . .  14
        3.11.5.  Mixer-to-client audio level  . . . . . . . . . . . .  14
        3.11.6.  Coordination of video orientation (CVO)  . . . . . .  14
@@ -91,28 +91,32 @@ Table of Contents
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  17
    7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  18
    8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  18
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .  18
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .  18
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  19
 
 1.  Introduction
 
-   In the design of the PERC end-to-end security solution for RTP media
-   streams there is need to carefully consider what properties the
-   different fields have, their security and privacy implications, and
-   provide recommendations and requiremements for how they are handled.
-   This review needs to consider both hop-by-hop properties as well as
-   the end-to-end security.
+   In the design of the Privacy Enchanced RTP Conferencing (PERC) end-
+   to-end security solution for RTP [RFC3550] media streams there is
+   need to carefully consider what properties the different RTP fields
+   have, their security and privacy implications, and provide
+   recommendations and requiremements for how they are handled.  This
+   review needs to consider both hop-by-hop properties as well as the
+   end-to-end security.
+
+
+
+
+
+
+Westerlund               Expires April 21, 2016                 [Page 2]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
    The fields analysed are that of a regular RTP packet.  This is to
    consider the impact of the information that exists normally in an
    centralized multi-party conference.
-
-
-
-Westerlund               Expires April 16, 2016                 [Page 2]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
 
    This document is a working document, and not intended to be published
    as an RFC.
@@ -161,11 +165,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-
-
-
-
-Westerlund               Expires April 16, 2016                 [Page 3]
+Westerlund               Expires April 21, 2016                 [Page 3]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -204,7 +204,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    As a general rule, the only reason to encrypt something without
    integrity Protection is to save the overhead of the tag.  As the PERC
    Solution will have both hbh tag and e2e tag, no overhead is saved by
-   not Integrity protection so as a general rule confidentiality implies
+   not integrity protecting so as a general rule confidentiality implies
    authentication.
 
    Some general considerations apply.  Fields that are end-to-end
@@ -221,32 +221,32 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 4]
+Westerlund               Expires April 21, 2016                 [Page 4]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
-   used RTP (V=2).  Modification of this field should result in the
+   used RTP (v=2).  Modification of this field should result in the
    packet being dropped by the receiving endpoint or MDD, independent if
    it is hop-by-hop authenticated.  The version field does not require
    end-to-end authentication as the MDD has more efficient denial of
    service attacks that it can perform on the endpoints, including not
-   forwarding a single media packet/stream.  The field does not need to
-   be confidentiality protected end-to-end as the MDD must know that it
-   is RTP it receives.  The field may be hop-by-hop confidentiality
+   forwarding a single media packet/stream.  The field can not be
+   confidentiality protected end-to-end as the MDD must know that it is
+   RTP (v=2) it receives.  The field may be hop-by-hop confidentiality
    protected as part of an attempt to hide that the packet stream is
    RTP, although packet analysis is likely to reveal that the streams
    are real-time media anyway.
 
-   If ever an RTP v=3 is defined it is clear that a particular version
-   must be used on a particular hop.  It is not possible to predict if
-   it would be possible to have the end-to-end information translated
-   between one hop using v=2 and one using v=3.  If such translation and
-   e2e authentication would be performed, the receiving entity must be
-   aware of it, to know that the field's value is not the original one.
-   Thus it becomes a choice if one want to require explicit knowledge of
-   the translation, or not demand it by excluding the field from end-to-
-   end translation.
+   If ever an RTP v=3 is defined in the future it is clear that one
+   particular version must be used per hop.  It is not possible to
+   predict if it would be possible to have the end-to-end information
+   translated between one hop using v=2 and one using v=3.  If such
+   translation and e2e authentication would be performed, the receiving
+   entity must be aware of it, to know that the field's value is not the
+   original one.  Thus, it becomes a choice if one want to require
+   explicit knowledge of the translation, or not demand it by excluding
+   the field from end-to-end authentication.
 
 3.2.  Padding Indicator bit (P)
 
@@ -277,7 +277,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 5]
+Westerlund               Expires April 21, 2016                 [Page 5]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -292,10 +292,11 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    MDD must be able to modify the X bit.  Currently, there is no strong
    argument for why a receiving endpoint needs to know that there where
    header extensions present from the originating endpoint that has been
-   removed.  It might arise if one starts using end-to-end protected
-   header extensions and want to ensure detection of removal of such
-   header extensions by the MDD.  However, other methods for ensuring
-   that exist.  Conclusion is that there are no need for knowing the
+   removed.  It might arise when using end-to-end protected header
+   extensions and want to ensure detection of removal of such header
+   extensions by the MDD.  However, other methods for ensuring that
+   exist, most likley by authenticating the end-to-end header extensions
+   themselves.  Conclusion is that there are no need for knowing the
    original value.
 
    There are no need for end-to-end confidentiality, nor authentication.
@@ -328,16 +329,17 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    properties appear to be in a violation of the intended security
    model.  The current conclusion will be no need for orignal value.
 
-      Note: The possibility for originating endpoints to create a CSRC
-      list will need further discussion as it affects the possibility to
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 6]
+
+Westerlund               Expires April 21, 2016                 [Page 6]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+      Note: The possibility for originating endpoints to create a CSRC
+      list will need further discussion as it affects the possibility to
       rely on the SSRC/CSRC value as reference to the originating
       identity.
 
@@ -384,20 +386,20 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    The recommendation is to use end-to-end authenticaiton of the value.
    End-to-end confidentiality needs exits as the marker bit can carry
    semantics direclty related to the content encoded.  Audio's common
-   semantics as start of speech burst, is telling the passive monitoring
-   something on the ongoing flow of information.  This needs to be
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 7]
+Westerlund               Expires April 21, 2016                 [Page 7]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   semantics as start of speech burst, is telling the passive monitoring
+   something on the ongoing flow of information.  This needs to be
    balanced against the potential needs for the MDD to have this
    information for better function, like knowing where to switch.
 
-   The marker bit should be both end-to-end authenticated as well as
+   The marker bit should be both hop-by-hop authenticated as well as
    confidentiality protected.  This is to prevent modification of this
    important piece of information to avoid that the MDD react to
    manipulated data.  The confidentiality is there to prevent third
@@ -418,8 +420,8 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    signalling contexts the binding between a payload type value and the
    payload format configuration will only have local meaning.  And the
    PT value identifying a particular codec configuration is not unlikely
-   a different value with another endpoint.  Thus, the MDD will need to
-   maintain translation tables for each ingress and egress pair.
+   a different PT value with another endpoint.  Thus, the MDD will need
+   to maintain translation tables for each ingress and egress pair.
 
    As knowing the correct payload format and codec configuration is
    cruical to be able to correctly decode the received payload, it is in
@@ -431,32 +433,33 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    endpoint would need to know also how the originating PT values map
    against the payload format and its parameters to verify correctness.
 
-   End-to-end authentication of original value is recommended given that
-   the receiving endpoint can also get the payload format configuration.
-   End-to-end confidentiality could be desirable as it simplifies for an
-   attacker to know which codec is used, or at least detect when the
-   codec changes.  When doing content analytics it simplifies to know
-   the codec, so the codecs behaviour can be accounted for.  However,
-   this is not cruical information, and it appears very difficult to
-   confidentiality protect the PT field value in respect to the MDD.
-
-   Hop-by-hop authentication is important to prevent thrid-party
-   modifications and avoid wasting resources by forwarding erronous
+   End-to-end authentication of original value is recommended, given
+   that the receiving endpoint also get the payload format
+   configuration.  End-to-end confidentiality would be desirable as it
+   simplifies for an attacker to know which codec is used, or at least
+   detect when the codec changes.  When doing content analytics it
+   simplifies to know the codec, so the codecs behaviour can be
+   accounted for.  However, this is not cruical information, and it
+   appears very difficult to confidentiality protect the PT field value
+   in respect to the MDD.
 
 
 
-Westerlund               Expires April 16, 2016                 [Page 8]
+Westerlund               Expires April 21, 2016                 [Page 8]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   Hop-by-hop authentication is important to prevent thrid-party
+   modifications and avoid wasting resources by forwarding erronous
    information.  Hob-by-hop confidentiality is recommended by not
    cruical as the information leakage can be limited to knowing when the
    same codec is being used.  If the signalling is kept confidential
    towards any third party, then this minimal leakage is achieved.  If
    one uses payload formats that has static mappings without remapping
-   them, then the codec will be known by third parties.  The payload
-   type is needed in third party quality monitors that gather statitics
+   them, then the codec will be known by third parties.  As a countering
+   requirement that may need to be considered.  The payload type is
+   usually needed in third party quality monitors that gather statitics
    about the RTP packet stream as it passes a measuring point.
 
 3.7.  Sequence Number
@@ -476,14 +479,15 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    RTP stream.
 
       Note: Sequence number based replay is vunerable in a environment
-      where the MDD can perform swithcing operations from an attack
-      using delaying of packets, rathern than replaying them.  Due to
-      the switching operation the receiving endpoint will need to accept
-      any sequence number that is greater than previously received, as
-      it lacks knowledge about how many payloads the originating
-      endpoint has sent in the time interval since the last payload was
-      received.  Thus an MDD can select to send any payload between the
-      last forwarded and the latest received from the origin.
+      where the MDD can perform swithcing operations.  This from an
+      attack using delaying of packets, rathern than replaying them.
+      Due to the switching operation the receiving endpoint will need to
+      accept any sequence number that is greater than previously
+      received, as it lacks knowledge about how many payloads the
+      originating endpoint has sent in the time interval since the last
+      payload was received.  Thus an MDD can select to send any payload
+      between the last forwarded and the latest received from the
+      origin.
 
    End-to-End authentication of the original payload seqence number is
    likely required.  End-to-end confidentiality is not possible as the
@@ -493,33 +497,35 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    reordered packets would be significantly more difficult.  However,
    due to the real-time properties, such actions are unlikely to be
    feasible.  However, if any such deliberate reordering would be
+
+
+
+
+Westerlund               Expires April 21, 2016                 [Page 9]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
    attempted, the original sequence number would need to be
    confidentiality protected.
 
    Hop-by-hop authentication of the sequence number is recommended to
    prevent attacks on the receiver buffer, including forcing the
-
-
-
-Westerlund               Expires April 16, 2016                 [Page 9]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
    receiver to discard other packets.  Hop-by-hop confidentiality is
    recommened but not required.  This as the goal would be to attempt to
    hide the correct sequence, across unintentional or intentional
    reordering, and enable detection of lost packets.  Such knowledge has
    some use in content analysis.  At the same time having this
-   information in the clear enables third party monitoiring.
+   information in the clear enables third party monitoiring to gather
+   statistics about re-ordering and packet loss.
 
 3.8.  Timestamp
 
    The RTP timestamp expresses playout related time information.  When a
    MDD is an media switching RTP mixer, it will need to provide a
    consistent timeline across switches.  The timeline is also the
-   outgoing SSRC from the mixer's internal timeline, and not specific to
-   any of the originating RTP streams being switched into the stream.
+   outgoing SSRC's (from the mixer) internal timeline, and not specific
+   to any of the originating RTP streams being switched into the stream.
    Thus, the timestamp in relation to the originating packet will need
    to be rewritten.
 
@@ -543,35 +549,37 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    using other protocol means.
 
    If the original timestamp needs end-to-end authentication is
-   dependent on if one can define a delay attack protection using it.
-   If not it is likely not needed.  End-to-end confidentiality will be
-   difficult as the MDD will need to know where in the timeline a
-   particular payload belongs to.  This is also closely related to the
-   payload sequence information discussed above Section 3.7.
-
-   Hop-by-hop authentication is needed to prevent third party attacks.
-   End-to-end confidentiality is recommended as it prevents leaking
-   information about the sequence of the media and how much media is
-   packed into each payload, especially for audio.  This is coupled to
-   the protection on provide the sequence number.  At the same time a
+   dependent on if one can define a mechanism for delay attack
+   protection using it.  If not it is likely not needed.  End-to-end
+   confidentiality will be difficult as the MDD will need to know where
+   in the timeline a particular payload belongs to.  This is also
 
 
 
-Westerlund               Expires April 16, 2016                [Page 10]
+
+Westerlund               Expires April 21, 2016                [Page 10]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
 
+   closely related to the payload sequence information discussed above
+   Section 3.7.
+
+   Hop-by-hop authentication is needed to prevent third party attacks.
+   Hop-by-hop confidentiality is recommended as it prevents leaking
+   information about the sequence of the media and how much media is
+   packed into each payload, especially for audio.  This is coupled to
+   the protection on provide the sequence number.  At the same time a
    third party quality monitor likely need the RTP timestamp to perform
    its role adequately.
 
 3.9.  SSRC
 
    The SSRC identifies the source of the RTP packet.  As each SSRC has
-   its own RTP sequence number space as well as timestamp sequence
+   its own RTP sequence number space as well as timestamp sequence,
    collisions shall be avoided.  For the PERC usage it is also important
    that a receiving endpoint can separate two different originating
-   sources and to map the SSRC to a human readble name (or alias).The
+   sources and to map the SSRC to a human readable name (or alias).  The
    important security related issue is that unless the originating RTP
    stream can be identified the MDD could create one outgoing stream
    that selects packets from either of them.  This may be challenging
@@ -601,6 +609,15 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    redirecting packets between incoming RTP streams.  It would have
    benefits to confidentiality protect the SSRC towards third parties as
    it would make it more difficult for such an attacker to associate
+
+
+
+
+Westerlund               Expires April 21, 2016                [Page 11]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
    packets to different RTP streams, when the originating endpoint sends
    more than one stream in the same transport flow.
 
@@ -610,14 +627,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    streams that contributed to the media content of this packet.  In the
    PERC case, where the payload is end-to-end and not mixed in the
    middle boxes the field is expected to contain a single value.  This
-
-
-
-Westerlund               Expires April 16, 2016                [Page 11]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
    is for the case where the originating SSRC is moved into the CSRC
    field with the MDD acts as an media switching mixer.  As discusssed
    in Section 3.4 there could in theory be cases where an endpoint is
@@ -638,10 +647,10 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    party to corrupt the field.  Hop-by-hop confidentiality is
    recommended but not requried.
 
-3.11.  Header Extension
+3.11.  Header Extensions
 
    This section assumes that the RTP header extension is used following
-   the mechanism in [RFC5285].  Thus the header extension can contain
+   the mechanism in [RFC5285].  Thus, the header extension can contain
    multiple different extensions as agreed and identified according to
    signalling.  Each header extension format in use are assigned an
    identifer that are per endpoint and RTP session agreed.  This results
@@ -658,6 +667,13 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    material that need end-to-end authentication or also end-to-end
    confidentiality.
 
+
+
+Westerlund               Expires April 21, 2016                [Page 12]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
    The current summary of the known information is the following.  The
    MDD needs to modify the IDs and add or remove some header extensions.
    There are header extensions that really should use hop-by-hop
@@ -666,15 +682,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    and forwarding decision.  The SMPTE time-code mapping, the
    Cordination of Video Orientation, the Region of Interest and the SDES
    information are all information from the originating endpoint
-
-
-
-Westerlund               Expires April 16, 2016                [Page 12]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
-   intended to receiving endpoint.  In the case of teh SDES information,
+   intended to receiving endpoint.  In the case of the SDES information,
    likely also needed by the MDD.  This is information that all should
    be authenticated end-to-end to ensure that the MDD can't modify it.
    SPMTE time-codes, Coordination of video orientation (CVO), Region of
@@ -713,6 +721,15 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    Hop-by-hop authentication is recommended, and confidentiality should
    be applied if not used end-to-end.
 
+
+
+
+
+Westerlund               Expires April 21, 2016                [Page 13]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
+
 3.11.3.  Synchronisation metadata
 
    Synchronisation metadata [RFC6051] is an header extension that
@@ -722,14 +739,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    switching mixer.  The information could be end-to-end authenticated
    to prevent the MDD from intefering with it, and if included by an
    originating endpoint it can be assumed that it is intended for any
-
-
-
-Westerlund               Expires April 16, 2016                [Page 13]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
    current receiver of this RTP stream.  The information does not appear
    to be sensitive from a confidentiality perspective.
 
@@ -769,22 +778,19 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    This information is meta data about the media content itself.  It
    does not appear to be information required by an MDD for its task.
-   Changing the video orientation may in some cases completely change
-   the meaning, e.g. a hand doing sign language Therefore this
-   information should be end-to-end confidentiality protected as well as
-   authenticated.  Hop-by-hop authentication is recommended and
-   confidentiality as well if not applied end-to-end.
 
 
 
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 14]
+Westerlund               Expires April 21, 2016                [Page 14]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   Changing the video orientation may in some cases completely change
+   the meaning, e.g. a hand doing sign language.  Therefore, this
+   information should be end-to-end confidentiality protected as well as
+   authenticated.  Hop-by-hop authentication is recommended and
+   confidentiality as well if not applied end-to-end.
 
 3.11.7.  Region-of-interest (ROI)
 
@@ -828,19 +834,18 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    able to modify it.  It needs to be end-to-end confidentiality
    protected and authenticated.  The payload should be hop-by-hop
    authenticated to prevent wasting downstream resources by forwarding a
-   corrupt or modified payload.  Hop-by-hop confidentiality is not
-   strictly needed as it will be protected end-to-end.  However, to
-   prevent tracking of how particular payloads are forwarded, it could
-   be confidentiality protected also hop-by-hop.
 
 
 
-
-
-Westerlund               Expires April 16, 2016                [Page 15]
+Westerlund               Expires April 21, 2016                [Page 15]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
+
+   corrupt or modified payload.  Hop-by-hop confidentiality is not
+   strictly needed as it will be protected end-to-end.  However, to help
+   prevent tracking of how particular payloads are forwarded, it could
+   be confidentiality protected also hop-by-hop.
 
 3.13.  Padding Octets
 
@@ -862,7 +867,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    Yes:  Something is required to be done, or in the case of MDD
       modification need to be possible.
 
-   No:  Something that is not to be done or needs to be done.
+   No:  Something that is not to be done, nor needs to be done.
 
    Rec:  Recommened to be done but not required.
 
@@ -870,7 +875,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    *: Please see description in the section for specific considerations.
 
-   ?: Classification is uncertain and need further input.
+   ?: Classification is more uncertain and need further input.
 
 
 
@@ -888,12 +893,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-
-
-
-
-
-Westerlund               Expires April 16, 2016                [Page 16]
+Westerlund               Expires April 21, 2016                [Page 16]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -902,14 +902,14 @@ Internet-Draft         PERC handling of RTP fields          October 2015
    |    Data    |  MDD  |   Orig   |  E2E   |  E2E   |  HBH   |  HBH   |
    |            |  Mod  |  Needed  |  Auth  |  Conf  |  Auth  |  Conf  |
    +------------+-------+----------+--------+--------+--------+--------+
-   |     V      |   No  |    No    |   No   |   No   |  May   |  May   |
+   |     V      |   No  |    No    |   No   |   No   |  Yes   |  May   |
    |     P      |   No  |   Yes    |  Yes   |  May?  |  Yes   |  Rec   |
    |     X      |  Yes  |    No    |   No   |   No   |  Yes   |  Rec   |
    |     CC     |  Yes  |    No    |   No   |   No   |  Yes   |  Rec   |
-   |     M      |  No?  |   Yes    |  Rec   |  Rec?  |  Yes   |  Yes   |
+   |     M      |   No  |   Yes    |  Yes   |  Rec?  |  Yes   |  Yes   |
    |     PT     |  Yes  |   Yes?   |  Rec?  |  No*   |  Yes   |  Rec   |
    |   Seq No   |  Yes  |   Yes*   |  Yes   |   No   |  Yes   |  Rec   |
-   | Timestamp  |  Yes  |    ?     |   ?    |   No   |  Yes   |  Rec   |
+   | Timestamp  |  Yes  |   Yes?   |  Yes?  |   No   |  Yes   |  Rec   |
    |    SSRC    |  May  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
    |   CSRCs    |  Yes  |   Yes*   |  Yes*  |   No   |  Yes   |  Rec   |
    | Extensions |  Yes  |  Some?   | Some?  | Some?  |  Yes   |  Some  |
@@ -949,7 +949,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
 
 
-Westerlund               Expires April 16, 2016                [Page 17]
+Westerlund               Expires April 21, 2016                [Page 17]
 
 Internet-Draft         PERC handling of RTP fields          October 2015
 
@@ -962,7 +962,7 @@ Internet-Draft         PERC handling of RTP fields          October 2015
 
    The author like to thank John Mattsson for review comments.
 
-9.  Normative References
+9.  Informative References
 
    [I-D.ietf-avtcore-rtp-topologies-update]
               Westerlund, M. and S. Wenger, "RTP Topologies", draft-
@@ -981,11 +981,6 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               Description Protocol (SDP)", draft-ietf-mmusic-sdp-bundle-
               negotiation-23 (work in progress), July 2015.
 
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <http://www.rfc-editor.org/info/rfc2119>.
-
    [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
               Jacobson, "RTP: A Transport Protocol for Real-Time
               Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
@@ -1003,16 +998,17 @@ Internet-Draft         PERC handling of RTP fields          October 2015
               RFC 5484, DOI 10.17487/RFC5484, March 2009,
               <http://www.rfc-editor.org/info/rfc5484>.
 
-
-
-Westerlund               Expires April 16, 2016                [Page 18]
-
-Internet-Draft         PERC handling of RTP fields          October 2015
-
-
    [RFC6051]  Perkins, C. and T. Schierl, "Rapid Synchronisation of RTP
               Flows", RFC 6051, DOI 10.17487/RFC6051, November 2010,
               <http://www.rfc-editor.org/info/rfc6051>.
+
+
+
+
+Westerlund               Expires April 21, 2016                [Page 18]
+
+Internet-Draft         PERC handling of RTP fields          October 2015
+
 
    [RFC6464]  Lennox, J., Ed., Ivov, E., and E. Marocco, "A Real-time
               Transport Protocol (RTP) Header Extension for Client-to-
@@ -1061,4 +1057,8 @@ Author's Address
 
 
 
-Westerlund               Expires April 16, 2016                [Page 19]
+
+
+
+
+Westerlund               Expires April 21, 2016                [Page 19]
