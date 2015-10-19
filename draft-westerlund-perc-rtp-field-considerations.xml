@@ -47,9 +47,10 @@
     <section title="Introduction">
       <t>In the design of the PERC end-to-end security solution for RTP media
       streams there is need to carefully consider what properties the
-      different fields have, their security implications and provide
-      recommendations for how they are handled. This review needs to consider
-      both hop-by-hop properties as well as the end-to-end security.</t>
+      different fields have, their security and privacy implications, and
+      provide recommendations and requiremements for how they are handled.
+      This review needs to consider both hop-by-hop properties as well as the
+      end-to-end security.</t>
 
       <t>The fields analysed are that of a regular RTP packet. This is to
       consider the impact of the information that exists normally in an
@@ -85,7 +86,7 @@
       <section title="Connection Case">
         <t>This analys is based on a basic connectivity use cases, where a
         media stream sending endpoint (originating) sends one or more RTP
-        streams to a MDD. That MDD is in its turn connected to another MDD
+        streams to a MDD. That MDD selectively forwards media to another MDD
         (Cascaded) which further sends the media (when selecting to) from the
         originating endpoint to the receiving endpoint. This connection case
         is depicted in <xref target="fig-connection-case"></xref>.</t>
@@ -100,11 +101,13 @@
 ]]></artwork>
         </figure>
 
-        <t></t>
+        <t>The MDDs are not trusted with anything except forwarding media
+        according to the policies given to it by endpoints and to not forward
+        media from third parties. </t>
       </section>
 
       <section title="Additional Assumptions">
-        <t>This document assumes that the originating media stream is
+        <t>This document assumes that the originating media stream is uniquely
         identified by the SSRC value used by the originating endpoint. This
         SSRC value needs to be preserved to the receiving endpoint. It is
         assumed that even if SSRC/CSRC translation is in use by an MDD, there
@@ -113,7 +116,9 @@
         operating as Media Switching RTP mixers they will indicate the
         originating SSRC as CSRC when it switches that stream into one of the
         MDD's SSRCs. The CSRC will need to be maintained even over multiple
-        MDDs.</t>
+        MDDs. </t>
+
+        <t></t>
       </section>
     </section>
 
@@ -132,11 +137,11 @@
           <t>Does it need hop-by-hop authentication?</t>
 
           <t>Does it need hob-by-hop confidentiality?</t>
-
-          <t></t>
-
-          <t></t>
-        </list></t>
+        </list>As a general rule, the only reason to encrypt something without
+      integrity Protection is to save the overhead of the tag. As the PERC
+      Solution will have both hbh tag and e2e tag, no overhead is saved by not
+      Integrity protection so as a general rule confidentiality implies
+      authentication. </t>
 
       <t>Some general considerations apply. Fields that are end-to-end
       authenticated is actually recommended to be hop-by-hop authenticated,
@@ -159,6 +164,16 @@
         hop-by-hop confidentiality protected as part of an attempt to hide
         that the packet stream is RTP, although packet analysis is likely to
         reveal that the streams are real-time media anyway.</t>
+
+        <t>If ever an RTP v=3 is defined it is clear that a particular version
+        must be used on a particular hop. It is not possible to predict if it
+        would be possible to have the end-to-end information translated
+        between one hop using v=2 and one using v=3. If such translation and
+        e2e authentication would be performed, the receiving entity must be
+        aware of it, to know that the field's value is not the original one.
+        Thus it becomes a choice if one want to require explicit knowledge of
+        the translation, or not demand it by excluding the field from
+        end-to-end translation. </t>
       </section>
 
       <section title="Padding Indicator bit (P)">
@@ -194,11 +209,11 @@
         MDD must be able to modify the X bit. Currently, there is no strong
         argument for why a receiving endpoint needs to know that there where
         header extensions present from the originating endpoint that has been
-        removed. It might arise if one starts using end-to-end confidentiality
-        protected header extensions and want to ensure detection of removal of
-        such header extensions by the MDD. However, other methods for ensuring
-        that is likely to exist. Conclusion is that there are no need for
-        knowing the original value.</t>
+        removed. It might arise if one starts using end-to-end protected
+        header extensions and want to ensure detection of removal of such
+        header extensions by the MDD. However, other methods for ensuring that
+        exist. Conclusion is that there are no need for knowing the original
+        value.</t>
 
         <t>There are no need for end-to-end confidentiality, nor
         authentication. Hop-by-hop authentication shall be used to prevent
@@ -233,7 +248,7 @@
             <t>Note: The possibility for originating endpoints to create a
             CSRC list will need further discussion as it affects the
             possibility to rely on the SSRC/CSRC value as reference to the
-            originating identity.</t>
+            originating identity. </t>
           </list>The CC field does not appear to need end-to-end
         authenticated, nor confidentiality protected. The CC field shall be
         hop-by-hop authenticated to prevent third party modifcations as it
@@ -241,7 +256,7 @@
         wasting resources for further entities in the conference, and should
         be detected as early as possible. Erronous payload delimitation due to
         error in the CC field will result in the receiving endpoint's
-        integrity verification of the end-to-end payload will fail. End-to-end
+        integrity verification of the end-to-end payload will fail. Hop-by-hop
         confidentiality is recommened as the CC field allows a third party to
         better determine the RTP payload size, thus being information with
         some privacy sensitivity</t>
@@ -307,7 +322,7 @@
         payload format configuration will only have local meaning. And the PT
         value identifying a particular codec configuration is not unlikely a
         different value with another endpoint. Thus, the MDD will need to
-        maintain translation tables for each ingress and egress pair. </t>
+        maintain translation tables for each ingress and egress pair.</t>
 
         <t>As knowing the correct payload format and codec configuration is
         cruical to be able to correctly decode the received payload, it is in
@@ -327,7 +342,7 @@
         simplifies to know the codec, so the codecs behaviour can be accounted
         for. However, this is not cruical information, and it appears very
         difficult to confidentiality protect the PT field value in respect to
-        the MDD. </t>
+        the MDD.</t>
 
         <t>Hop-by-hop authentication is important to prevent thrid-party
         modifications and avoid wasting resources by forwarding erronous
@@ -338,7 +353,7 @@
         payload formats that has static mappings without remapping them, then
         the codec will be known by third parties. The payload type is needed
         in third party quality monitors that gather statitics about the RTP
-        packet stream as it passes a measuring point. </t>
+        packet stream as it passes a measuring point.</t>
       </section>
 
       <section anchor="sec-sequnce-nr" title="Sequence Number">
@@ -349,11 +364,12 @@
         being received at the ingress.</t>
 
         <t>The receiving endpoint likely need the originating sequence number
-        or something semantically equivalent. The reasons for this is replay
-        protection. If the receiving endpoint knows through an end-to-end
-        authenticated way the sequence in which the payloads was originated,
-        the receiver can prevent using payloads that are replays from previous
-        points in the RTP stream. <list style="empty">
+        or something semantically equivalent. The reasons for this is
+        decryption, replay protection, and packet reordering. If the receiving
+        endpoint knows through an end-to-end authenticated way the sequence in
+        which the payloads was originated, the receiver can prevent using
+        payloads that are replays from previous points in the RTP stream.
+        <list style="empty">
             <t>Note: Sequence number based replay is vunerable in a
             environment where the MDD can perform swithcing operations from an
             attack using delaying of packets, rathern than replaying them. Due
@@ -374,7 +390,7 @@
         would be significantly more difficult. However, due to the real-time
         properties, such actions are unlikely to be feasible. However, if any
         such deliberate reordering would be attempted, the original sequence
-        number would need to be confidentiality protected. </t>
+        number would need to be confidentiality protected.</t>
 
         <t>Hop-by-hop authentication of the sequence number is recommended to
         prevent attacks on the receiver buffer, including forcing the receiver
@@ -383,7 +399,7 @@
         sequence, across unintentional or intentional reordering, and enable
         detection of lost packets. Such knowledge has some use in content
         analysis. At the same time having this information in the clear
-        enables third party monitoiring. </t>
+        enables third party monitoiring.</t>
       </section>
 
       <section title="Timestamp">
@@ -408,11 +424,11 @@
         matching boundaries. Secondly, as the different endpoint don't have
         synchronized clocks there will be clock skew, thus some clock skew
         compensation at switch points are to be expected. For the delay attack
-        protection also the clock skew issue is present. For both clcok skew
+        protection also the clock skew issue is present. For both clock skew
         related issues this is further complicated that the clock skew
         compensation information is in RTCP and curently under control of the
         MDD. Thus, one would need to consider protecting this RTCP information
-        end-to-end. </t>
+        end-to-end, or provided using other protocol means.</t>
 
         <t>If the original timestamp needs end-to-end authentication is
         dependent on if one can define a delay attack protection using it. If
@@ -428,7 +444,7 @@
         packed into each payload, especially for audio. This is coupled to the
         protection on provide the sequence number. At the same time a third
         party quality monitor likely need the RTP timestamp to perform its
-        role adequately. </t>
+        role adequately.</t>
       </section>
 
       <section title="SSRC">
@@ -436,37 +452,38 @@
         its own RTP sequence number space as well as timestamp sequence
         collisions shall be avoided. For the PERC usage it is also important
         that a receiving endpoint can separate two different originating
-        sources. The important security related issue is that unless the
-        originating RTP stream can be identified the MDD could create one
-        outgoing stream that selects packets from either of them. This may be
-        challenging due to replay protection, but not impossible depending on
-        how the sequence number and timestamps align. To avoid having multiple
-        identifers for the RTP packet stream, the design team has proposed
-        that the SSRC shall be unique and the original value preserved to the
-        receiving endpoint. <list style="empty">
+        sources and to map the SSRC to a human readble name (or alias).The
+        important security related issue is that unless the originating RTP
+        stream can be identified the MDD could create one outgoing stream that
+        selects packets from either of them. This may be challenging due to
+        replay protection, but not impossible depending on how the sequence
+        number and timestamps align. To avoid having multiple identifers for
+        the RTP packet stream, the design team has proposed that the SSRC
+        shall be unique and the original value preserved to the receiving
+        endpoint. <list style="empty">
             <t>Note: There where no agreement on how the uniqness shall be
-            ensured and are for further discussion. </t>
+            ensured and are for further discussion.</t>
           </list></t>
 
         <t>Even if the originating endpoints have unique SSRCs, it is not
         clear if the same requirement will be extended to the MDD, and then
         especially media switching RTP mixers that have their own SSRCs. Thus
         translation of SSRC as a method for dealing with SSRC collisions may
-        need to be dealt with. </t>
+        need to be dealt with.</t>
 
         <t>The original SSRC needs to be authenticated end-to-end to prevent
         the splicing attack described above. The SSRC can't be confidentiality
         protected end-to-end as it is required by the MDD to know which
         packets are part of the same RTP stream. Note that for an media
         switching mixer, the SSRC field will not be the original one, instead
-        that value is expected to be put in the CSRC field. </t>
+        that value is expected to be put in the CSRC field.</t>
 
         <t>The SSRC shall be authenticated hop-by-hop to prevent splicing or
         redirecting packets between incoming RTP streams. It would have
         benefits to confidentiality protect the SSRC towards third parties as
         it would make it more difficult for such an attacker to associate
         packets to different RTP streams, when the originating endpoint sends
-        more than one stream in the same transport flow. </t>
+        more than one stream in the same transport flow.</t>
       </section>
 
       <section title="CSRC List">
@@ -492,7 +509,7 @@
 
         <t>Hop-by-hop the CSRC list shall be authenticated to prevent a third
         party to corrupt the field. Hop-by-hop confidentiality is recommended
-        but not requried. </t>
+        but not requried.</t>
       </section>
 
       <section title="Header Extension">
@@ -506,13 +523,13 @@
         addition a number of header extensions in use will be intended and
         targeted to the MDD. When MDDs are cascade they will likely need to
         forward the extension between themselves, and only on the last leg
-        towards the receiving endpoint remove them. </t>
+        towards the receiving endpoint remove them.</t>
 
         <t>What security properties that are needed will be highly dependent
         on the header extension and their content. Therefore a number of
         header extensions are analysed in this section to determine if they
         contain material that need end-to-end authentication or also
-        end-to-end confidentiality. </t>
+        end-to-end confidentiality.</t>
 
         <t>The current summary of the known information is the following. The
         MDD needs to modify the IDs and add or remove some header extensions.
@@ -528,7 +545,7 @@
         time-codes, Coordination of video orientation (CVO), Region of
         Interest (ROI) are all information that the MDD lack need to see to be
         able to perform its task to forward media appropriately. Thus
-        end-to-end confidentiality is recommended to be applied. </t>
+        end-to-end confidentiality is recommended to be applied.</t>
 
         <section title="Transmission Time offsets">
           <t>The <xref target="RFC5450">Transmission Time offsets</xref> are
@@ -538,14 +555,14 @@
           information from a privacy and confidentiality aspect. It only
           provides more detaild information in what sequence a packet actually
           was sent, information that both the timestamp and sequence number
-          provide. </t>
+          provide.</t>
 
           <t>The authentication of this information can be valuable. However,
           as the MDD receives and the potentially fowards it, it has limited
           end-to-end value, and it is more appropriate for an MDD to rewrite
           this header when forwarding the packet to provide hop-by-hop
           transport information. Thus, hop-by-hop authentication is
-          recommended. </t>
+          recommended.</t>
         </section>
 
         <section title="SMPTE time-code mapping">
@@ -558,10 +575,10 @@
           the content the receiver sees, inluding seeking in stored contentet
           provided into a conferencing context. There appear to be no reason
           why the MDD should have access to this, and end-to-end
-          confidentiality is recommended. </t>
+          confidentiality is recommended.</t>
 
           <t>Hop-by-hop authentication is recommended, and confidentiality
-          should be applied if not used end-to-end. </t>
+          should be applied if not used end-to-end.</t>
         </section>
 
         <section title="Synchronisation metadata">
@@ -585,7 +602,7 @@
           provide an attacker of good possibilities as of deducing what is
           being said <xref target="RFC6562"></xref>. It is also is important
           meta data needed by an MDD if it is to perform the RTP stream
-          switching based on who is talking. </t>
+          switching based on who is talking.</t>
 
           <t>This header may require end-to-end confidentiality, this is for
           cases where the meta data is inteded for the receiving endpoints
@@ -593,18 +610,18 @@
           potentially be of interest to have authentication of the origin, but
           with a method that the MDDs could verify, and which would allow the
           final MDD before a receiving endpoint to remove the header
-          extension. </t>
+          extension.</t>
 
           <t>The header shall be hop-by-hop confidentiality protected and
-          authenticated. </t>
+          authenticated.</t>
         </section>
 
         <section title="Mixer-to-client audio level">
           <t><xref target="RFC6465">Mixer-to-Client Audio Level
           Indication</xref> is an providing audio levels for individual
           contributing sources within an audio mix. As the PERC system does
-          not support content mixing, this header does not appear relevant.
-          </t>
+          not support content mixing, this header does not appear
+          relevant.</t>
         </section>
 
         <section title="Coordination of video orientation (CVO)">
@@ -616,10 +633,11 @@
 
           <t>This information is meta data about the media content itself. It
           does not appear to be information required by an MDD for its task.
-          Therefore this information should be end-to-end confidentiality
-          protected as well as authenticated. Hop-by-hop authentication is
-          recommended and confidentiality as well if not applied end-to-end.
-          </t>
+          Changing the video orientation may in some cases completely change
+          the meaning, e.g. a hand doing sign language Therefore this
+          information should be end-to-end confidentiality protected as well
+          as authenticated. Hop-by-hop authentication is recommended and
+          confidentiality as well if not applied end-to-end.</t>
         </section>
 
         <section title="Region-of-interest (ROI)">
@@ -627,7 +645,7 @@
           header extension providing the receiving endpoint information that
           the video image it receives is a covering a particular sub-area of
           what is originally captured. There exist other protocol mechanism to
-          select the region of interest. </t>
+          select the region of interest.</t>
 
           <t>This information is meta data about the media content itself. It
           does not appear to be information required by an MDD for its task.
@@ -642,7 +660,7 @@
           target="I-D.ietf-avtext-sdes-hdr-ext"></xref> and provides SDES
           CNAME and <xref
           target="I-D.ietf-mmusic-sdp-bundle-negotiation">MID</xref>
-          information associated with the originating SSRC. </t>
+          information associated with the originating SSRC.</t>
 
           <t>The privacy sensitve nature of the CNAME is dependent of how it
           is generated. If generated with privacy in <xref
@@ -652,11 +670,11 @@
           descriptions and are not expected to be sensitive. This information
           is provided by the originating endpoint, and being able to trust it
           is highly valuabel, thus it should be end-to-end authenticated, and
-          preferably also be possible to validate by the MDD. </t>
+          preferably also be possible to validate by the MDD.</t>
 
           <t>The hop-by-hop should be authenticated to avoid wasting
           resources, and the hop-by-hop confiendiality reduces the tracking
-          possibilities by third parties. </t>
+          possibilities by third parties.</t>
         </section>
       </section>
 
@@ -681,7 +699,7 @@
         authentication is necessary. Hop-by-hop authentication is recommended
         to prevent wasting resources on corrupt or modified padding.
         Hop-by-hop confidentiality is not necessary due to the end-to-end one,
-        but would reduce tracking possibilities. </t>
+        but would reduce tracking possibilities.</t>
       </section>
     </section>
 
@@ -1077,22 +1095,24 @@
       header compressors the RTP header information is in clear text and only
       integrity protected.</t>
 
-      <t>With the increased privacy concerns and known attacks based on
-      payload length analys, it has become more important to consider
+      <t>With the increased privacy concerns <xref
+      target="RFC6973"></xref><xref target="RFC7258"></xref> and known attacks
+      based on payload length analys, it has become more important to consider
       confidentiality protect the whole RTP header, but specifically the X,
       CC, M, PT fields as they reveal important information around the payload
       and its length. Based on this I recommend that we not only consider SRTP
       as outer security layer to provide hop-by-hop confidentiality and
       integrity protection, but also methods that protect the whole RTP
-      packet, like DTLS. </t>
+      packet, like DTLS.</t>
     </section>
 
     <section title="Contributors">
-      <t>Cullen Jennings contributed the summary table.</t>
+      <t>Cullen Jennings contributed the initial version of the summary
+      table.</t>
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t></t>
+      <t>The author like to thank John Mattsson for review comments. </t>
     </section>
   </middle>
 
@@ -1116,7 +1136,11 @@
 
       <?rfc include='reference.RFC.6562'?>
 
+      <?rfc include='reference.RFC.6973'?>
+
       <?rfc include='reference.RFC.7022'?>
+
+      <?rfc include='reference.RFC.7258'?>
 
       <?rfc include='reference.I-D.ietf-avtcore-rtp-topologies-update'?>
 
